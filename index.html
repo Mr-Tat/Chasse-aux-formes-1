@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>À la chasse aux formes — v4</title>
+<title>À la chasse aux formes — v5</title>
 <style>
 :root{
   --bg:#f5f7fb;
@@ -282,11 +282,19 @@ button,select{font:inherit}
   stroke-dasharray:8 6;
 }
 
+.contourOverlay{
+  fill:none!important;
+  stroke:var(--line);
+  stroke-width:3;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+}
+
 .sideCard{
-  padding:10px;
+  padding:9px;
   display:flex;
   flex-direction:column;
-  gap:7px;
+  gap:6px;
   min-height:0;
   overflow:auto;
 }
@@ -353,8 +361,8 @@ button,select{font:inherit}
   color:#334055;
 }
 .feedback{
-  min-height:54px;
-  padding:10px 12px;
+  min-height:48px;
+  padding:8px 10px;
   border-radius:14px;
   background:#f5f7fb;
   color:#455168;
@@ -373,7 +381,7 @@ button,select{font:inherit}
   display:none;
   border:0;
   border-radius:16px;
-  padding:15px 14px;
+  padding:12px 12px;
   background:var(--ok);
   color:white;
   font-size:1rem;
@@ -413,7 +421,7 @@ button,select{font:inherit}
       <div class="menuCard card">
         <div class="menuTitleRow">
           <h1 class="menuTitle">À la chasse aux formes</h1>
-          <span class="smallVersion">v4.0</span>
+          <span class="smallVersion">v5.0</span>
         </div>
         <div class="menuSub">Observe les formes, puis choisis un niveau pour commencer.</div>
 
@@ -461,7 +469,7 @@ button,select{font:inherit}
         <div class="headerText">
           <div class="headerTitleRow">
             <div class="headerTitle">À la chasse aux formes</div>
-            <span class="smallVersion">v4.0</span>
+            <span class="smallVersion">v5.0</span>
           </div>
           <div class="headerMeta" id="headerMeta">Niveau 1 · Exercice 1 / 1</div>
         </div>
@@ -515,7 +523,6 @@ button,select{font:inherit}
 
         <div id="feedback" class="feedback">Choisis une catégorie, puis clique sur les zones.</div>
         <button id="continueBtn" class="continueBtn">OK, continuer</button>
-        <div class="note">Après validation, les erreurs sont entourées. Tu peux les corriger puis revalider.</div>
       </aside>
     </div>
   </section>
@@ -915,12 +922,18 @@ function currentExercise(){
   const actualIndex = state.order[state.exercise] ?? state.exercise;
   return list[actualIndex];
 }
-function shapeSvg(s, idx){
-  const attrs = `data-idx="${idx}" data-kind="${s.kind}" class="clickable unanswered exercise"`;
+function shapeElement(s, attrs){
   if(s.tag==="rect") return `<rect ${attrs} x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="${s.rx||0}"/>`;
   if(s.tag==="circle") return `<circle ${attrs} cx="${s.cx}" cy="${s.cy}" r="${s.r}"/>`;
   if(s.tag==="ellipse") return `<ellipse ${attrs} cx="${s.cx}" cy="${s.cy}" rx="${s.rx}" ry="${s.ry}"/>`;
   return `<polygon ${attrs} points="${s.points}"/>`;
+}
+function shapeSvg(s, idx){
+  const attrs = `data-idx="${idx}" data-kind="${s.kind}" class="clickable unanswered exercise"`;
+  return shapeElement(s, attrs);
+}
+function contourSvg(s){
+  return shapeElement(s, `class="contourOverlay exercise"`);
 }
 function bindShapes(){
   scene.querySelectorAll(".clickable").forEach(el=>{
@@ -939,7 +952,9 @@ function updateStatus(){
 }
 function renderExercise(){
   const ex = currentExercise();
-  scene.innerHTML = ex.shapes.map(shapeSvg).join("") + ex.reward();
+  const filledShapes = ex.shapes.map(shapeSvg).join("");
+  const topContours = ex.shapes.map(contourSvg).join("");
+  scene.innerHTML = filledShapes + topContours + ex.reward();
   bindShapes();
   sceneTitle.textContent = ex.title;
   sceneSub.textContent = "Choisis une catégorie puis clique sur les zones.";
