@@ -1,1082 +1,488 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>À la chasse aux formes — v6</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>À la chasse aux formes</title>
 <style>
 :root{
-  --bg:#f5f7fb;
-  --card:#ffffff;
-  --soft:#eef2f7;
-  --line:#445066;
-  --ink:#25324a;
-  --muted:#748197;
-
-  --sq:#4f86f7;
-  --rect:#5ab88a;
-  --tri:#f7a044;
-  --disc:#9568df;
-  --other:#8a95a4;
-
-  --ok:#2f9e62;
-  --bad:#d85f5f;
+  --bg:#eef2f6; --panel:#ffffff; --ink:#172033; --muted:#667085; --line:#233044;
+  --square:#2f6fed; --rectangle:#2aa876; --triangle:#ed8a2f; --disk:#8457d9; --none:#7b8494;
+  --danger:#d64545; --success:#18845a; --shadow:0 12px 36px rgba(25,36,56,.12);
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  overflow:hidden;
-}
-button,select{font:inherit}
-.app{
-  height:100dvh;
-  padding:8px;
-}
-.screen{
-  display:none;
-  height:100%;
-}
-.screen.active{
-  display:block;
-}
-.card{
-  background:var(--card);
-  border-radius:22px;
-  box-shadow:0 10px 28px rgba(37,50,74,.08);
-}
-.smallVersion{
-  font-size:.72rem;
-  color:#9099aa;
-  font-weight:800;
-  background:#edf1f6;
-  border-radius:999px;
-  padding:2px 8px;
-  line-height:1.2;
-  letter-spacing:.02em;
-}
+html,body{height:100%;margin:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);overflow:hidden}
+button{font:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,.35);outline-offset:3px}
+.hidden{display:none!important}
 
-/* MENU */
-#menuScreen.active{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.menuWrap{
-  width:min(980px, 100%);
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.menuCard{
-  width:min(920px, 100%);
-  padding:28px 30px;
-  text-align:center;
-}
-.menuTitleRow{
-  display:flex;
-  justify-content:center;
-  gap:8px;
-  align-items:baseline;
-  flex-wrap:wrap;
-}
-.menuTitle{
-  margin:0;
-  font-size:clamp(2rem, 4.5vw, 3.2rem);
-}
-.menuSub{
-  margin:8px 0 24px;
-  color:var(--muted);
-  font-size:1rem;
-}
-.shapeIntro{
-  display:grid;
-  grid-template-columns:repeat(4, minmax(120px,1fr));
-  gap:14px;
-  margin-bottom:26px;
-}
-.shapeIntroItem{
-  background:linear-gradient(180deg,#ffffff,#f6f8fb);
-  border:1px solid #e4e9f1;
-  border-radius:20px;
-  padding:16px 10px 14px;
-}
-.shapeIntroLabel{
-  margin-top:10px;
-  font-weight:800;
-}
-.menuLevels{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-.menuLevelBtn{
-  border:0;
-  border-radius:22px;
-  padding:18px 16px;
-  background:#25324a;
-  color:white;
-  cursor:pointer;
-  box-shadow:0 8px 20px rgba(37,50,74,.15);
-}
-.menuLevelBtn .menuLevelTitle{
-  display:block;
-  font-size:1.08rem;
-  font-weight:900;
-}
-.menuLevelBtn .menuLevelDesc{
-  display:block;
-  margin-top:6px;
-  font-size:.92rem;
-  opacity:.88;
-}
+#home{height:100dvh;display:grid;place-items:center;padding:24px;overflow:auto;background:
+  radial-gradient(circle at 15% 15%,rgba(47,111,237,.10),transparent 30%),
+  radial-gradient(circle at 85% 85%,rgba(132,87,217,.08),transparent 34%),#f7f9fc}
+.home-card{width:min(900px,96vw);background:rgba(255,255,255,.92);border:1px solid #dfe5ee;border-radius:26px;box-shadow:var(--shadow);padding:34px 38px 38px}
+.home-title{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-bottom:24px}
+.home-title h1{font-size:clamp(28px,4vw,48px);line-height:1;margin:0;letter-spacing:-.03em}
+.version{font-size:12px;color:var(--muted);font-weight:700}
+.shape-intro{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:18px auto 32px;max-width:710px}
+.intro-item{display:grid;place-items:center;gap:10px;color:#39445a;font-weight:750}
+.intro-icon{width:82px;height:82px;border-radius:20px;background:#f7f9fc;display:grid;place-items:center;border:1px solid #e5e9f0}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.level-btn{border:0;border-radius:16px;padding:18px 16px;text-align:center;cursor:pointer;transition:.18s ease;min-height:86px;color:#fff;box-shadow:0 8px 18px rgba(34,48,68,.10)}
+.level-btn[data-level="1"]{background:#2f6fed}.level-btn[data-level="2"]{background:#2aa876}.level-btn[data-level="3"]{background:#8457d9}
+.level-btn:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 11px 24px rgba(34,48,68,.16)}
+.level-btn strong{display:block;font-size:18px;margin-bottom:5px}.level-btn span{display:block;color:rgba(255,255,255,.92);font-size:14px;font-weight:750}
+
+#game{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);padding:12px;gap:10px}
+.topbar{min-height:46px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
+.menu-btn{border:1px solid #d9e0ea;background:#fff;color:#344054;border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:700}
+.progress{text-align:center;min-width:0}.progress strong{font-size:15px}.progress small{display:block;color:var(--muted);margin-top:2px}
+.classified{justify-self:end;background:#fff;border:1px solid #d9e0ea;border-radius:10px;padding:8px 11px;font-size:13px;font-weight:800;white-space:nowrap}
+
+.game-layout{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:12px}
+.scene-shell{position:relative;min-width:0;min-height:0;border:1px solid #d9e1ec;border-radius:20px;background:#fff;box-shadow:0 8px 28px rgba(28,40,60,.08);overflow:hidden;display:grid;place-items:center}
+#sceneSvg{width:100%;height:100%;display:block;touch-action:manipulation;background:linear-gradient(180deg,#fbfcfe 0%,#f4f7fa 100%)}
+.scene-shape{cursor:pointer;stroke:var(--line);stroke-width:3;vector-effect:non-scaling-stroke;transition:fill .16s ease,opacity .16s ease,stroke .16s ease,stroke-width .16s ease;fill:#fbfcfd}
+.scene-shape:hover{filter:brightness(.985)}
+.scene-shape.unclassified{stroke:#be7a20;stroke-width:5;stroke-dasharray:10 7}
+.scene-shape.error{stroke:var(--danger);stroke-width:6}
+.scene-shape.locked{cursor:default}
+.reward-bg{opacity:0;transition:opacity .65s ease}.reward-mode .reward-bg{opacity:1}.reward-mode .scene-shape{transition:fill .75s ease,stroke .6s ease,filter .6s ease;filter:drop-shadow(0 2px 2px rgba(28,40,60,.12))}
+
+.palette{min-height:0;background:#fff;border:1px solid #d9e1ec;border-radius:18px;box-shadow:0 8px 24px rgba(28,40,60,.06);padding:12px;display:flex;flex-direction:column;gap:10px}
+.palette-title{font-size:13px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.cat-list{display:grid;gap:8px}
+.cat-btn{display:grid;grid-template-columns:42px 1fr;align-items:center;gap:10px;width:100%;min-height:48px;border:1px solid #dce3ed;background:#fff;border-radius:12px;padding:6px 10px;cursor:pointer;text-align:left;color:#253044;font-weight:800;transition:.14s ease}
+.cat-btn:hover{border-color:#b9c7da}.cat-btn.active{border-color:#8192aa;background:#f4f7fa;box-shadow:inset 0 0 0 2px rgba(47,111,237,.10)}
+.icon-box{width:34px;height:34px;border-radius:9px;display:grid;place-items:center}.icon-box svg{display:block;width:24px;height:24px}
+.status{min-height:68px;border-radius:12px;background:#f6f8fb;padding:10px 11px;color:#475467;font-size:13px;line-height:1.35;display:flex;align-items:center}
+.status.error-text{background:#fff3f1;color:#963c34}.status.success-text{background:#eaf8f1;color:#176c4a;font-weight:700}
+.actions{margin-top:auto;display:grid;gap:8px}.primary,.secondary,.continue{border:0;border-radius:12px;padding:12px 14px;font-weight:850;cursor:pointer}.primary{background:#202b3d;color:#fff}.primary:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#eef2f6;color:#344054}.continue{background:#176f51;color:#fff;font-size:15px;box-shadow:0 8px 18px rgba(23,111,81,.20)}
+.score-note{font-size:11px;color:#7b8494;text-align:center;line-height:1.25}
+
 @media (max-width:860px){
-  body{overflow:auto}
-  .app{height:auto; min-height:100dvh}
-  .menuCard{padding:22px 18px}
-  .shapeIntro{grid-template-columns:repeat(2,1fr)}
-  .menuLevels{grid-template-columns:1fr}
+ body{overflow:auto}
+ #game{height:100dvh;min-height:650px}
+ .game-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+ .palette{padding:9px;gap:8px}.palette-title{display:none}.cat-list{grid-template-columns:repeat(5,1fr);gap:6px}.cat-btn{grid-template-columns:1fr;place-items:center;gap:3px;min-height:60px;padding:5px 3px;text-align:center;font-size:10px}.icon-box{width:30px;height:30px}.status{min-height:44px;padding:7px 9px}.actions{grid-template-columns:1fr 1fr;margin-top:0}.continue{grid-column:1/-1}
 }
-
-/* GAME */
-#gameScreen.active{
-  display:grid;
-  grid-template-rows:auto minmax(0,1fr);
-  gap:8px;
-  min-height:0;
-  height:100%;
+@media (max-width:620px){
+ #home{padding:12px}.home-card{padding:24px 18px}.shape-intro{grid-template-columns:repeat(2,1fr);gap:12px}.levels{grid-template-columns:1fr}.level-btn{min-height:70px}
+ .topbar{grid-template-columns:auto 1fr}.classified{grid-column:1/-1;justify-self:center;margin-top:-5px}.progress{text-align:right}.cat-list{grid-template-columns:repeat(3,1fr)}
+ #game{height:auto;min-height:100dvh}.scene-shell{min-height:42vh}.game-layout{grid-template-rows:minmax(360px,50vh) auto}
 }
-.topbar{
-  min-height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:7px 12px;
-}
-.topbarLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
-.backBtn{
-  border:0;
-  border-radius:12px;
-  padding:9px 12px;
-  background:#e9edf4;
-  color:#324056;
-  font-weight:800;
-  cursor:pointer;
-  flex:none;
-}
-.headerText{
-  min-width:0;
-}
-.headerTitleRow{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.headerTitle{
-  font-size:1.15rem;
-  font-weight:900;
-  white-space:nowrap;
-}
-.headerMeta{
-  font-size:.92rem;
-  color:var(--muted);
-  margin-top:1px;
-}
-.statusPill{
-  background:#f4f7fa;
-  border:1px solid #e4e9f1;
-  border-radius:999px;
-  padding:8px 12px;
-  color:#556277;
-  font-weight:800;
-  font-size:.9rem;
-  flex:none;
-}
-
-.mainGrid{
-  min-height:0;
-  height:100%;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 258px;
-  grid-template-rows:minmax(0,1fr);
-  gap:10px;
-  overflow:hidden;
-}
-.sceneCard{
-  padding:8px;
-  display:grid;
-  grid-template-rows:auto minmax(0,1fr);
-  min-height:0;
-  overflow:hidden;
-}
-.sceneCardHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  padding:1px 4px 5px;
-}
-.sceneTitle{
-  font-weight:900;
-  font-size:1rem;
-}
-.sceneSub{
-  font-size:.78rem;
-  color:var(--muted);
-}
-.sceneViewport{
-  min-height:0;
-  width:100%;
-  height:100%;
-  background:#f0f3f7;
-  border:1px solid #dfe5ed;
-  border-radius:18px;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-#scene{
-  width:100%;
-  height:100%;
-  max-width:100%;
-  max-height:100%;
-  display:block;
-  background:#f0f3f7;
-}
-.clickable{
-  stroke:var(--line);
-  stroke-width:3;
-  vector-effect:non-scaling-stroke;
-  cursor:pointer;
-  transition:opacity .2s ease, filter .12s ease;
-}
-.clickable:hover{filter:brightness(.985)}
-.unanswered{fill:#fcfcfd}
-.exercise.fade{opacity:0}
-.reward{
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .7s ease;
-}
-.reward.show{opacity:1}
-.errorMark{
-  stroke:var(--bad)!important;
-  stroke-width:6!important;
-  stroke-dasharray:8 6;
-}
-.contourOverlay{
-  fill:none!important;
-  stroke:var(--line);
-  stroke-width:3;
-  vector-effect:non-scaling-stroke;
-  pointer-events:none;
-}
-
-.sideCard{
-  padding:9px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  min-height:0;
-  overflow:auto;
-}
-.sideCard h2{margin:2px 0 2px; font-size:1rem}
-.shapeBtn{
-  border:2px solid transparent;
-  border-radius:16px;
-  background:#f5f7fb;
-  color:#314055;
-  padding:8px 9px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-weight:900;
-  text-align:left;
-  cursor:pointer;
-}
-.shapeBtn.active{
-  border-color:#2b3850;
-  background:#fff;
-}
-.iconBox{
-  width:30px;
-  height:30px;
-  border-radius:8px;
-  display:grid;
-  place-items:center;
-  flex:none;
-}
-.iconBox.other{background:var(--other)}
-.miniIcon{width:20px;height:20px;display:block}
-.note{
-  color:var(--muted);
-  font-size:.8rem;
-  line-height:1.34;
-}
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-.action{
-  border:0;
-  border-radius:14px;
-  padding:11px 10px;
-  font-weight:900;
-  cursor:pointer;
-}
-.action.primary{background:#25324a;color:#fff}
-.action.secondary{background:#e9edf4;color:#334055}
-.feedback{
-  min-height:48px;
-  padding:8px 10px;
-  border-radius:14px;
-  background:#f5f7fb;
-  color:#455168;
-  font-size:.93rem;
-  line-height:1.35;
-}
-.feedback.ok{background:#eaf7ef;color:#1f754b}
-.feedback.bad{background:#fff0f0;color:#984646}
-.continueBtn{
-  display:none;
-  border:0;
-  border-radius:16px;
-  padding:12px 12px;
-  background:var(--ok);
-  color:white;
-  font-size:1rem;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:0 8px 18px rgba(47,158,98,.22);
-}
-.continueBtn.show{display:block}
-
-@media (max-width:760px){
-  body{overflow:auto}
-  .app{height:auto; min-height:100dvh}
-  #gameScreen.active{height:auto}
-  .mainGrid{
-    grid-template-columns:1fr;
-    grid-template-rows:auto auto;
-    overflow:visible;
-  }
-  .sideCard{order:2; overflow:visible}
-  .sceneCard{height:min(62vh,520px); min-height:360px}
-}
-
-/* menu icons */
-.bigIcon{width:66px;height:66px;display:block;margin:auto}
 </style>
 </head>
 <body>
-<div class="app">
-
-  <section id="menuScreen" class="screen active">
-    <div class="menuWrap">
-      <div class="menuCard card">
-        <div class="menuTitleRow">
-          <h1 class="menuTitle">À la chasse aux formes</h1>
-          <span class="smallVersion">v6.0</span>
-        </div>
-        <div class="menuSub">Observe les formes, puis choisis un niveau pour commencer.</div>
-
-        <div class="shapeIntro">
-          <div class="shapeIntroItem"><div id="introSquare"></div><div class="shapeIntroLabel">Carré</div></div>
-          <div class="shapeIntroItem"><div id="introRect"></div><div class="shapeIntroLabel">Rectangle</div></div>
-          <div class="shapeIntroItem"><div id="introTri"></div><div class="shapeIntroLabel">Triangle</div></div>
-          <div class="shapeIntroItem"><div id="introDisc"></div><div class="shapeIntroLabel">Disque</div></div>
-        </div>
-
-        <div class="menuLevels">
-          <button class="menuLevelBtn" data-level="1">
-            <span class="menuLevelTitle">Niveau 1</span>
-            <span class="menuLevelDesc">Formes isolées</span>
-          </button>
-          <button class="menuLevelBtn" data-level="2">
-            <span class="menuLevelTitle">Niveau 2</span>
-            <span class="menuLevelDesc">Dessins composés</span>
-          </button>
-          <button class="menuLevelBtn" data-level="3">
-            <span class="menuLevelTitle">Niveau 3</span>
-            <span class="menuLevelDesc">Dessins complexes</span>
-          </button>
-        </div>
-      </div>
+<section id="home">
+  <div class="home-card">
+    <div class="home-title"><h1>À la chasse aux formes</h1><span class="version">v1.0</span></div>
+    <div class="shape-intro" aria-label="Formes à reconnaître">
+      <div class="intro-item"><div class="intro-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="15" y="15" width="34" height="34" rx="3" fill="#2f6fed"/></svg></div><span>Carré</span></div>
+      <div class="intro-item"><div class="intro-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="19" width="46" height="26" rx="3" fill="#2aa876"/></svg></div><span>Rectangle</span></div>
+      <div class="intro-item"><div class="intro-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><polygon points="32,11 54,51 10,51" fill="#ed8a2f"/></svg></div><span>Triangle</span></div>
+      <div class="intro-item"><div class="intro-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="20" fill="#8457d9"/></svg></div><span>Disque</span></div>
     </div>
-  </section>
-
-  <section id="gameScreen" class="screen">
-    <div class="topbar card">
-      <div class="topbarLeft">
-        <button id="backBtn" class="backBtn">← Menu</button>
-        <div class="headerText">
-          <div class="headerTitleRow">
-            <div class="headerTitle">À la chasse aux formes</div>
-            <span class="smallVersion">v6.0</span>
-          </div>
-          <div class="headerMeta" id="headerMeta">Niveau 1 · Exercice 1 / 1</div>
-        </div>
-      </div>
-      <div class="statusPill" id="statusPill">0 / 0 classées</div>
+    <div class="levels">
+      <button class="level-btn" data-level="1"><strong>Niveau 1</strong><span>Formes isolées</span></button>
+      <button class="level-btn" data-level="2"><strong>Niveau 2</strong><span>Dessins composés</span></button>
+      <button class="level-btn" data-level="3"><strong>Niveau 3</strong><span>Dessins complexes</span></button>
     </div>
+  </div>
+</section>
 
-    <div class="mainGrid">
-      <div class="sceneCard card">
-        <div class="sceneCardHead">
-          <div>
-            <div class="sceneTitle" id="sceneTitle">Exercice</div>
-            <div class="sceneSub" id="sceneSub">Choisis une catégorie puis clique sur les zones.</div>
-          </div>
-        </div>
-        <div class="sceneViewport">
-          <svg id="scene" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Exercice de reconnaissance des formes"></svg>
-        </div>
+<section id="game" class="hidden">
+  <header class="topbar">
+    <button id="menuBtn" class="menu-btn">← Menu</button>
+    <div class="progress"><strong id="progressTitle"></strong><small id="sceneTitle"></small></div>
+    <div id="classifiedCount" class="classified">0 / 0 classées</div>
+  </header>
+  <main class="game-layout">
+    <section class="scene-shell" aria-label="Zone de dessin">
+      <svg id="sceneSvg" viewBox="0 0 960 540" role="img" aria-label="Dessin géométrique à classer"></svg>
+    </section>
+    <aside class="palette">
+      <div class="palette-title">Choisis une catégorie</div>
+      <div id="catList" class="cat-list"></div>
+      <div id="status" class="status">Choisis une catégorie puis classe chaque zone.</div>
+      <div class="actions">
+        <button id="validateBtn" class="primary">Valider</button>
+        <button id="clearBtn" class="secondary">Effacer</button>
+        <button id="continueBtn" class="continue hidden"></button>
       </div>
-
-      <aside class="sideCard card">
-        <h2>Choisis une catégorie</h2>
-
-        <button class="shapeBtn active" data-choice="square">
-          <span class="iconBox" style="background:var(--sq)" id="btnSquareIcon"></span> Carré
-        </button>
-        <button class="shapeBtn" data-choice="rectangle">
-          <span class="iconBox" style="background:var(--rect)" id="btnRectIcon"></span> Rectangle
-        </button>
-        <button class="shapeBtn" data-choice="triangle">
-          <span class="iconBox" style="background:var(--tri)" id="btnTriIcon"></span> Triangle
-        </button>
-        <button class="shapeBtn" data-choice="disc">
-          <span class="iconBox" style="background:var(--disc)" id="btnDiscIcon"></span> Disque
-        </button>
-        <button class="shapeBtn" data-choice="other">
-          <span class="iconBox other" id="btnOtherIcon"></span> Aucune de ces formes
-        </button>
-
-        <div class="note">La couleur montre seulement ton choix. Elle ne dit pas si c’est juste.</div>
-
-        <div class="actions">
-          <button class="action primary" id="validateBtn">Valider</button>
-          <button class="action secondary" id="resetBtn">Effacer</button>
-        </div>
-
-        <div id="feedback" class="feedback">Choisis une catégorie, puis clique sur les zones.</div>
-        <button id="continueBtn" class="continueBtn">OK, continuer</button>
-      </aside>
-    </div>
-  </section>
-
-</div>
+      <div class="score-note">Le coloriage ne confirme pas la réponse. La correction se fait seulement avec « Valider ».</div>
+    </aside>
+  </main>
+</section>
 
 <script>
-const COLORS = {
-  square:getComputedStyle(document.documentElement).getPropertyValue('--sq').trim(),
-  rectangle:getComputedStyle(document.documentElement).getPropertyValue('--rect').trim(),
-  triangle:getComputedStyle(document.documentElement).getPropertyValue('--tri').trim(),
-  disc:getComputedStyle(document.documentElement).getPropertyValue('--disc').trim(),
-  other:getComputedStyle(document.documentElement).getPropertyValue('--other').trim()
+const NS='http://www.w3.org/2000/svg';
+const COLORS={square:'#2f6fed',rectangle:'#2aa876',triangle:'#ed8a2f',disk:'#8457d9',none:'#7b8494'};
+const LABELS={square:'Carré',rectangle:'Rectangle',triangle:'Triangle',disk:'Disque',none:'Aucune de ces formes'};
+const REWARD={blue:'#4f7fd7',green:'#63a97f',orange:'#e5974f',purple:'#8b6cc7',gold:'#d2a643',red:'#c96760',teal:'#4f9ca0',slate:'#75859b',cream:'#e7d9b2',brown:'#9a735d',pink:'#c47e9b',sky:'#79a8d8'};
+const S=(x,y,size,rot=0,reward=REWARD.blue)=>({kind:'rect',x,y,w:size,h:size,rot,expected:'square',reward});
+const R=(x,y,w,h,rot=0,reward=REWARD.green)=>({kind:'rect',x,y,w,h,rot,expected:'rectangle',reward});
+const T=(pts,reward=REWARD.orange)=>({kind:'polygon',points:pts,expected:'triangle',reward});
+const D=(cx,cy,r,reward=REWARD.purple)=>({kind:'circle',cx,cy,r,expected:'disk',reward});
+const E=(cx,cy,rx,ry,rot=0,reward=REWARD.slate)=>({kind:'ellipse',cx,cy,rx,ry,rot,expected:'none',reward});
+const P=(pts,reward=REWARD.slate)=>({kind:'polygon',points:pts,expected:'none',reward});
+
+const SCENES={
+1:[
+ {title:'Repérage A',theme:'atelier',shapes:[
+  S(85,70,72,8),R(285,64,130,78,-7),T('565,65 650,150 505,155'),D(820,112,43),
+  R(120,260,74,89,5),S(330,244,78,-10),T('530,350 582,225 660,338'),E(820,300,52,38,0),
+  R(180,415,118,83,8),P('430,455 466,382 520,395 548,470 485,487'),S(700,400,82,12),R(815,405,96,80,-4)
+ ]},
+ {title:'Repérage B',theme:'atelier',shapes:[
+  D(110,112,44),T('260,55 338,142 230,154'),R(480,72,76,92,7),S(720,68,75,-6),
+  R(92,245,132,88,-5),T('365,230 420,350 300,332'),E(585,295,50,37,0),S(782,243,80,10),
+  P('130,470 170,390 220,380 254,482 190,495'),R(355,395,111,84,3),S(600,392,76,-11),R(760,403,102,85,5)
+ ]},
+ {title:'Repérage C',theme:'atelier',shapes:[
+  R(76,75,96,84,5),S(300,65,80,-9),E(520,120,48,36,0),T('760,58 838,150 700,162'),
+  T('105,300 170,210 236,322'),R(325,232,84,96,-4),S(545,238,82,7),D(800,290,48),
+  S(120,398,76,-6),R(320,410,123,84,9),P('570,470 605,390 650,375 690,472 628,492'),R(770,390,95,79,-8)
+ ]},
+ {title:'Repérage D',theme:'atelier',shapes:[
+  T('80,154 145,60 208,162'),R(310,72,96,80,-4),D(555,112,45),S(765,68,78,10),
+  S(93,248,82,-7),T('335,225 408,342 278,340'),R(525,238,82,100,6),D(810,295,53),
+  R(115,410,113,82,-5),E(390,445,42,31,0),P('560,478 595,395 650,382 688,480 622,496'),S(790,400,79,-10)
+ ]},
+ {title:'Repérage E',theme:'atelier',shapes:[
+  D(105,120,48),R(260,80,121,82,4),T('540,60 618,154 495,168'),S(770,72,76,-8),
+  R(90,255,86,104,-6),S(320,245,82,9),E(565,292,48,36,0),T('735,338 807,217 866,342'),
+  P('110,478 145,398 198,382 250,482 182,500'),S(370,400,77,-7),R(575,405,102,85,5),R(790,405,98,81,-4)
+ ]}
+],
+2:[
+ {title:'Locomotive',theme:'train',shapes:[
+  R(135,214,420,155,0,REWARD.red),R(490,142,145,227,0,REWARD.slate),R(175,154,210,60,0,REWARD.cream),
+  S(515,175,74,0,REWARD.sky),R(534,278,70,92,0,REWARD.brown),R(98,327,85,42,0,REWARD.slate),
+  T('635,214 725,289 635,369',REWARD.orange),R(250,370,245,24,0,REWARD.slate),
+  D(220,445,50,REWARD.slate),D(430,445,50,REWARD.slate),D(220,445,24,REWARD.cream),D(430,445,24,REWARD.cream),
+  R(120,170,36,108,0,REWARD.slate),T('120,170 156,170 138,120',REWARD.gold),
+  E(285,105,50,23,0,REWARD.sky),P('685,320 742,320 720,365 662,365',REWARD.gold),P('405,278 448,270 455,302 412,310',REWARD.purple),
+  S(205,245,48,0,REWARD.cream),S(275,245,48,0,REWARD.cream),R(342,245,58,48,0,REWARD.cream)
+ ]},
+ {title:'Robot',theme:'robot',shapes:[
+  R(365,178,230,200,0,REWARD.slate),S(405,28,150,0,REWARD.sky),S(432,55,36,0,REWARD.cream),R(489,55,44,36,0,REWARD.cream),
+  R(440,101,80,25,0,REWARD.red),R(250,205,95,40,-8,REWARD.slate),R(615,205,95,40,8,REWARD.slate),
+  R(260,245,42,118,0,REWARD.slate),R(658,245,42,118,0,REWARD.slate),S(245,360,70,0,REWARD.cream),S(645,360,70,0,REWARD.cream),
+  R(400,378,58,100,0,REWARD.slate),R(502,378,58,100,0,REWARD.slate),R(372,470,105,34,0,REWARD.brown),R(483,470,105,34,0,REWARD.brown),
+  D(420,235,18,REWARD.green),D(480,235,18,REWARD.gold),D(540,235,18,REWARD.red),T('435,340 480,285 525,340',REWARD.orange),
+  P('530,285 570,275 585,315 545,325',REWARD.purple),E(560,220,24,16,0,REWARD.teal),P('380,292 410,282 422,312 390,323',REWARD.gold)
+ ]},
+ {title:'Fusée',theme:'space',shapes:[
+  R(405,120,150,265,0,REWARD.cream),T('405,120 480,38 555,120',REWARD.red),T('405,300 340,390 405,385',REWARD.orange),T('555,300 620,390 555,385',REWARD.orange),
+  D(480,190,42,REWARD.sky),D(480,190,20,REWARD.slate),R(438,250,84,70,0,REWARD.slate),
+  T('430,385 465,472 480,385',REWARD.gold),T('480,385 495,472 530,385',REWARD.gold),
+  R(245,330,90,42,0,REWARD.slate),D(280,410,34,REWARD.purple),D(680,135,28,REWARD.gold),
+  S(690,300,62,0,REWARD.blue),R(685,372,74,44,0,REWARD.green),E(730,455,62,24,0,REWARD.purple),
+  P('155,150 198,122 235,148 220,195 170,193',REWARD.slate),P('463,330 480,321 498,331 492,352 469,352',REWARD.teal),T('165,410 210,350 252,415',REWARD.orange)
+ ]},
+ {title:'Voilier',theme:'sea',shapes:[
+  R(470,115,24,265,0,REWARD.brown),T('470,135 300,300 470,300',REWARD.cream),T('494,150 650,300 494,300',REWARD.red),
+  P('260,320 705,320 650,390 315,390',REWARD.blue),R(355,390,255,36,0,REWARD.slate),
+  D(370,354,18,REWARD.purple),D(480,354,18,REWARD.purple),D(590,354,18,REWARD.purple),
+  R(150,315,88,44,0,REWARD.green),S(170,245,62,0,REWARD.sky),D(805,110,48,REWARD.gold),
+  E(160,132,70,25,0,REWARD.cream),E(735,215,62,24,0,REWARD.cream),
+  T('760,390 805,320 850,390',REWARD.orange),R(782,390,46,82,0,REWARD.brown),
+  P('95,420 145,395 190,425 165,470 115,468',REWARD.slate),R(690,405,65,54,0,REWARD.cream)
+ ]},
+ {title:'Camion',theme:'road',shapes:[
+  R(170,205,380,180,0,REWARD.blue),R(550,255,175,130,0,REWARD.red),T('550,255 625,190 695,255',REWARD.red),
+  R(586,282,72,60,0,REWARD.sky),R(670,305,55,80,0,REWARD.brown),R(125,350,95,35,0,REWARD.slate),
+  D(265,440,48,REWARD.slate),D(610,440,48,REWARD.slate),D(265,440,23,REWARD.cream),D(610,440,23,REWARD.cream),
+  S(215,245,55,0,REWARD.cream),S(300,245,55,0,REWARD.cream),S(385,245,55,0,REWARD.cream),
+  R(210,318,250,30,0,REWARD.green),T('755,330 815,265 872,330',REWARD.orange),R(792,330,44,92,0,REWARD.brown),
+  E(825,160,56,24,0,REWARD.cream),P('88,185 130,165 165,195 145,235 100,228',REWARD.slate),P('330,270 370,260 382,290 340,302',REWARD.purple)
+ ]}
+],
+3:[
+ {title:'Gare de montagne',theme:'station',shapes:[
+  R(80,250,270,160,0,REWARD.cream),T('70,250 215,135 360,250',REWARD.red),S(120,285,58,0,REWARD.sky),S(250,285,58,0,REWARD.sky),R(190,320,52,90,0,REWARD.brown),
+  R(410,285,380,115,0,REWARD.blue),R(690,225,100,175,0,REWARD.slate),S(715,250,50,0,REWARD.sky),R(450,235,170,50,0,REWARD.cream),
+  D(475,440,36,REWARD.slate),D(640,440,36,REWARD.slate),D(475,440,17,REWARD.cream),D(640,440,17,REWARD.cream),
+  S(445,310,46,0,REWARD.cream),S(515,310,46,0,REWARD.cream),R(585,310,55,46,0,REWARD.cream),T('790,285 855,330 790,375',REWARD.orange),
+  R(835,270,22,145,0,REWARD.slate),D(846,240,25,REWARD.red),D(846,180,25,REWARD.gold),D(846,120,25,REWARD.green),
+  R(85,478,720,12,0,REWARD.slate),R(100,510,690,12,0,REWARD.brown),
+  T('20,180 50,130 80,180',REWARD.green),T('95,180 125,125 155,180',REWARD.green),
+  E(470,120,76,25,0,REWARD.cream),E(600,95,54,20,0,REWARD.cream),P('365,175 400,155 430,182 412,215 372,210',REWARD.slate),E(302,374,24,15,0,REWARD.teal)
+ ]},
+ {title:'Chantier',theme:'construction',shapes:[
+  R(110,235,250,190,0,REWARD.cream),S(145,270,56,0,REWARD.sky),S(265,270,56,0,REWARD.sky),R(210,330,52,95,0,REWARD.brown),T('95,235 235,135 375,235',REWARD.red),
+  R(520,118,28,327,0,REWARD.gold),R(385,88,300,28,0,REWARD.gold),T('520,118 465,175 520,175',REWARD.orange),T('548,118 605,175 548,175',REWARD.orange),
+  R(640,138,22,145,0,REWARD.slate),P('600,283 700,283 680,340 620,340',REWARD.orange),
+  R(430,350,300,80,0,REWARD.blue),R(610,305,145,120,0,REWARD.red),R(640,330,63,52,0,REWARD.sky),
+  D(490,476,44,REWARD.slate),D(660,476,44,REWARD.slate),D(490,476,20,REWARD.cream),D(660,476,20,REWARD.cream),
+  R(70,455,300,22,0,REWARD.slate),T('780,430 825,355 870,430',REWARD.orange),R(808,430,34,72,0,REWARD.brown),
+  P('760,245 802,220 842,244 830,285 775,285',REWARD.slate),E(825,155,58,22,0,REWARD.cream),
+  T('400,448 425,405 450,448',REWARD.orange),T('730,448 755,405 780,448',REWARD.orange),
+  R(380,525,420,10,0,REWARD.brown),P('535,372 575,365 588,392 548,400',REWARD.purple)
+ ]},
+ {title:'Village',theme:'village',shapes:[
+  R(70,250,250,155,0,REWARD.cream),T('55,250 195,140 335,250',REWARD.red),S(105,285,54,0,REWARD.sky),S(230,285,54,0,REWARD.sky),R(175,325,48,80,0,REWARD.brown),
+  R(410,230,245,175,0,REWARD.cream),T('395,230 532,125 670,230',REWARD.red),S(445,270,52,0,REWARD.sky),S(565,270,52,0,REWARD.sky),
+  R(730,285,42,120,0,REWARD.brown),D(750,235,50,REWARD.green),D(660,235,38,REWARD.green),D(840,235,38,REWARD.green),
+  R(280,520,450,14,0,REWARD.slate),R(318,392,128,34,0,REWARD.blue),R(446,362,84,64,0,REWARD.blue),T('530,362 590,426 530,426',REWARD.orange),
+  D(355,475,38,REWARD.slate),D(505,475,38,REWARD.slate),D(355,475,17,REWARD.cream),D(505,475,17,REWARD.cream),
+  D(840,105,46,REWARD.gold),E(120,105,72,24,0,REWARD.cream),E(290,92,55,20,0,REWARD.cream),
+  P('700,430 745,405 790,432 770,475 720,470',REWARD.slate),T('60,455 95,405 130,455',REWARD.orange),
+  R(88,455,18,48,0,REWARD.brown),R(660,335,58,48,0,REWARD.gold),R(675,383,18,47,0,REWARD.brown),
+  T('815,455 850,405 885,455',REWARD.orange),E(610,365,24,15,0,REWARD.teal)
+ ]},
+ {title:'Base spatiale',theme:'spacebase',shapes:[
+  R(110,270,250,150,0,REWARD.slate),T('110,270 235,165 360,270',REWARD.cream),S(150,300,52,0,REWARD.sky),S(265,300,52,0,REWARD.sky),R(205,340,58,80,0,REWARD.brown),
+  R(455,160,125,245,0,REWARD.cream),T('455,160 518,80 580,160',REWARD.red),D(518,225,34,REWARD.sky),T('455,330 405,405 455,400',REWARD.orange),T('580,330 630,405 580,400',REWARD.orange),
+  R(690,310,135,70,0,REWARD.blue),R(740,265,85,45,0,REWARD.slate),S(755,275,38,0,REWARD.sky),D(720,425,38,REWARD.slate),D(810,425,38,REWARD.slate),D(720,425,17,REWARD.cream),D(810,425,17,REWARD.cream),
+  T('475,405 500,478 518,405',REWARD.gold),T('518,405 536,478 562,405',REWARD.gold),
+  R(80,515,800,14,0,REWARD.slate),D(835,110,42,REWARD.gold),E(180,105,70,22,0,REWARD.cream),
+  P('670,120 710,92 748,120 730,162 688,160',REWARD.purple),R(650,200,60,50,0,REWARD.green),R(665,250,20,60,0,REWARD.brown),
+  T('300,455 335,400 370,455',REWARD.orange),T('600,455 635,400 670,455',REWARD.orange),
+  P('85,175 125,145 165,175 145,220 100,215',REWARD.slate),R(360,110,65,42,0,REWARD.green),P('130,330 170,320 182,350 142,360',REWARD.pink)
+ ]},
+ {title:'Parc urbain',theme:'park',shapes:[
+  R(70,235,250,175,0,REWARD.cream),R(95,190,200,45,0,REWARD.slate),S(105,275,52,0,REWARD.sky),S(220,275,52,0,REWARD.sky),R(170,330,48,80,0,REWARD.brown),
+  R(390,350,240,26,0,REWARD.brown),R(415,310,190,40,0,REWARD.green),R(430,376,24,80,0,REWARD.slate),R(565,376,24,80,0,REWARD.slate),
+  R(721,285,38,120,0,REWARD.brown),D(740,235,50,REWARD.green),D(650,235,38,REWARD.green),D(830,235,38,REWARD.green),
+  D(450,470,38,REWARD.slate),D(610,470,38,REWARD.slate),R(490,452,80,16,0,REWARD.red),T('530,420 560,452 500,452',REWARD.orange),
+  R(520,380,20,40,0,REWARD.slate),S(512,350,36,0,REWARD.gold),
+  D(842,105,44,REWARD.gold),E(130,105,70,22,0,REWARD.cream),E(340,92,60,20,0,REWARD.cream),
+  P('820,330 860,305 900,332 885,375 838,375',REWARD.slate),T('80,455 115,405 150,455',REWARD.orange),
+  R(105,455,20,46,0,REWARD.brown),R(665,405,58,48,0,REWARD.purple),R(680,453,18,48,0,REWARD.brown),
+  T('250,455 285,405 320,455',REWARD.orange),S(330,420,45,0,REWARD.gold),
+  R(345,465,18,38,0,REWARD.brown),P('585,150 625,125 665,150 650,190 600,190',REWARD.slate)
+ ]}
+]};
+
+const LEVELS={
+  1:{name:'Niveau 1 — Formes isolées'},
+  2:{name:'Niveau 2 — Dessins composés'},
+  3:{name:'Niveau 3 — Dessins complexes'}
 };
 
-function iconSVG(kind, stroke="#fff", fill="none", cls="miniIcon"){
-  if(kind==="square"){
-    return `<svg class="${cls}" viewBox="0 0 32 32"><rect x="8" y="8" width="16" height="16" rx="1.5" fill="${fill}" stroke="${stroke}" stroke-width="2.6"/></svg>`;
-  }
-  if(kind==="rectangle"){
-    return `<svg class="${cls}" viewBox="0 0 32 32"><rect x="5" y="10" width="22" height="12" rx="1.5" fill="${fill}" stroke="${stroke}" stroke-width="2.6"/></svg>`;
-  }
-  if(kind==="triangle"){
-    return `<svg class="${cls}" viewBox="0 0 32 32"><polygon points="16,7 26,24 6,24" fill="${fill}" stroke="${stroke}" stroke-width="2.6" stroke-linejoin="round"/></svg>`;
-  }
-  if(kind==="disc"){
-    return `<svg class="${cls}" viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" fill="${stroke}" stroke="${stroke}" stroke-width="2.6"/></svg>`;
-  }
-  if(kind==="other"){
-    return `<svg class="${cls}" viewBox="0 0 32 32"><path d="M8 8 L24 24 M24 8 L8 24" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>`;
-  }
-  return "";
+const home=document.getElementById('home'),game=document.getElementById('game'),svg=document.getElementById('sceneSvg');
+const catList=document.getElementById('catList'),statusEl=document.getElementById('status'),validateBtn=document.getElementById('validateBtn'),clearBtn=document.getElementById('clearBtn'),continueBtn=document.getElementById('continueBtn');
+const progressTitle=document.getElementById('progressTitle'),sceneTitle=document.getElementById('sceneTitle'),classifiedCount=document.getElementById('classifiedCount');
+let state={level:1,order:[],index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,score:0,total:0,saved:false};
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function iconSvg(cat){
+ const fill=COLORS[cat];
+ if(cat==='square')return `<svg viewBox="0 0 28 28"><rect x="6" y="6" width="16" height="16" rx="1.5" fill="${fill}"/></svg>`;
+ if(cat==='rectangle')return `<svg viewBox="0 0 28 28"><rect x="4" y="8" width="20" height="12" rx="1.5" fill="${fill}"/></svg>`;
+ if(cat==='triangle')return `<svg viewBox="0 0 28 28"><polygon points="14,4 25,23 3,23" fill="${fill}"/></svg>`;
+ if(cat==='disk')return `<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="9.5" fill="${fill}"/></svg>`;
+ return `<svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="10" fill="none" stroke="${fill}" stroke-width="3"/><path d="M8 8 L20 20 M20 8 L8 20" stroke="${fill}" stroke-width="3" stroke-linecap="round"/></svg>`;
 }
-function setIcons(){
-  document.getElementById("btnSquareIcon").innerHTML = iconSVG("square");
-  document.getElementById("btnRectIcon").innerHTML   = iconSVG("rectangle");
-  document.getElementById("btnTriIcon").innerHTML    = iconSVG("triangle");
-  document.getElementById("btnDiscIcon").innerHTML   = iconSVG("disc");
-  document.getElementById("btnOtherIcon").innerHTML  = iconSVG("other");
-
-  document.getElementById("introSquare").innerHTML = iconSVG("square", COLORS.square, COLORS.square, "bigIcon");
-  document.getElementById("introRect").innerHTML   = iconSVG("rectangle", COLORS.rectangle, COLORS.rectangle, "bigIcon");
-  document.getElementById("introTri").innerHTML    = iconSVG("triangle", COLORS.triangle, COLORS.triangle, "bigIcon");
-  document.getElementById("introDisc").innerHTML   = iconSVG("disc", COLORS.disc, COLORS.disc, "bigIcon");
-}
-
-function rewardPanel(label, subtitle, bg="#dff0ff", ground="#84cc86"){
-  return `<g class="reward">
-    <rect width="1000" height="560" fill="${bg}"/>
-    <circle cx="875" cy="90" r="54" fill="#ffd45b"/>
-    <path d="M0 435 Q220 390 455 440 T1000 430 V560 H0Z" fill="${ground}"/>
-    <text x="500" y="255" text-anchor="middle" font-size="58" font-weight="900" fill="#304055">${label}</text>
-    <text x="500" y="310" text-anchor="middle" font-size="26" fill="#5c687a">${subtitle}</text>
-  </g>`;
-}
-function rewardHouse(){ return rewardPanel("Maison terminée !","Bravo, tout est juste.","#d7eeff","#83c86f"); }
-function rewardTrain(){ return rewardPanel("Train terminé !","Bravo, tout est juste.","#d8f0ff","#87cb76"); }
-function rewardRobot(){ return rewardPanel("Robot terminé !","Bravo, tout est juste.","#e6efff","#8dcd85"); }
-function rewardRocket(){ return rewardPanel("Fusée terminée !","Bravo, tout est juste.","#dde8ff","#8cca78"); }
-function rewardVillage(){ return rewardPanel("Village terminé !","Bravo, tout est juste.","#d8efff","#82c970"); }
-function rewardCity(){ return rewardPanel("Ville terminée !","Bravo, tout est juste.","#d9ecff","#8aca74"); }
-function rewardHarbor(){ return rewardPanel("Port terminé !","Bravo, tout est juste.","#d8efff","#7fc36a"); }
-function rewardPark(){ return rewardPanel("Parc terminé !","Bravo, tout est juste.","#def2ff","#86cc7f"); }
-
-const levels = {
-  1:{
-    label:"Niveau 1",
-    exercises:[
-      {
-        title:"Formes isolées — série A",
-        shapes:[
-          {kind:"square",tag:"rect",x:70,y:70,w:74,h:74},
-          {kind:"disc",tag:"circle",cx:250,cy:105,r:35},
-          {kind:"triangle",tag:"polygon",points:"390,58 442,148 340,145"},
-          {kind:"rectangle",tag:"rect",x:540,y:72,w:94,h:76},
-          {kind:"square",tag:"rect",x:715,y:72,w:74,h:74},
-          {kind:"rectangle",tag:"rect",x:860,y:68,w:74,h:84},
-
-          {kind:"triangle",tag:"polygon",points:"110,220 160,305 64,300"},
-          {kind:"rectangle",tag:"rect",x:238,y:220,w:88,h:72},
-          {kind:"disc",tag:"circle",cx:438,cy:255,r:38},
-          {kind:"square",tag:"rect",x:566,y:220,w:76,h:76},
-          {kind:"triangle",tag:"polygon",points:"742,210 792,298 694,290"},
-          {kind:"disc",tag:"circle",cx:904,cy:252,r:34},
-
-          {kind:"rectangle",tag:"rect",x:80,y:382,w:90,h:72},
-          {kind:"square",tag:"rect",x:246,y:378,w:74,h:74},
-          {kind:"triangle",tag:"polygon",points:"405,372 456,460 356,456"},
-          {kind:"rectangle",tag:"rect",x:545,y:376,w:76,h:84},
-          {kind:"disc",tag:"circle",cx:722,cy:416,r:34},
-          {kind:"square",tag:"rect",x:866,y:378,w:74,h:74}
-        ],
-        reward:()=>rewardPanel("BRAVO !","Toutes les formes sont bien classées.")
-      },
-      {
-        title:"Rectangles presque carrés",
-        shapes:[
-          {kind:"rectangle",tag:"rect",x:90,y:82,w:84,h:76},
-          {kind:"square",tag:"rect",x:250,y:80,w:72,h:72},
-          {kind:"triangle",tag:"polygon",points:"405,74 458,164 356,160"},
-          {kind:"disc",tag:"circle",cx:576,cy:116,r:34},
-          {kind:"rectangle",tag:"rect",x:688,y:80,w:76,h:84},
-          {kind:"square",tag:"rect",x:854,y:82,w:70,h:70},
-
-          {kind:"rectangle",tag:"rect",x:126,y:232,w:80,h:72},
-          {kind:"triangle",tag:"polygon",points:"290,220 340,308 242,304"},
-          {kind:"disc",tag:"circle",cx:448,cy:266,r:38},
-          {kind:"rectangle",tag:"rect",x:560,y:228,w:74,h:84},
-          {kind:"square",tag:"rect",x:712,y:232,w:74,h:74},
-          {kind:"triangle",tag:"polygon",points:"878,220 928,308 830,304"},
-
-          {kind:"disc",tag:"circle",cx:108,cy:426,r:34},
-          {kind:"rectangle",tag:"rect",x:234,y:386,w:86,h:76},
-          {kind:"square",tag:"rect",x:382,y:388,w:72,h:72},
-          {kind:"triangle",tag:"polygon",points:"544,382 592,468 496,464"},
-          {kind:"rectangle",tag:"rect",x:690,y:386,w:80,h:72},
-          {kind:"disc",tag:"circle",cx:886,cy:424,r:34}
-        ],
-        reward:()=>rewardPanel("BIEN JOUÉ !","Tu as bien observé les proportions.","#e9f4ff","#8dcd85")
-      },
-      {
-        title:"Formes isolées — série C",
-        shapes:[
-          {kind:"disc",tag:"circle",cx:118,cy:104,r:34},
-          {kind:"rectangle",tag:"rect",x:238,y:72,w:90,h:74},
-          {kind:"triangle",tag:"polygon",points:"398,64 450,154 348,150"},
-          {kind:"square",tag:"rect",x:542,y:72,w:74,h:74},
-          {kind:"rectangle",tag:"rect",x:702,y:68,w:72,h:84},
-          {kind:"disc",tag:"circle",cx:888,cy:108,r:34},
-
-          {kind:"square",tag:"rect",x:90,y:224,w:70,h:70},
-          {kind:"triangle",tag:"polygon",points:"262,218 312,304 214,298"},
-          {kind:"rectangle",tag:"rect",x:402,y:224,w:82,h:72},
-          {kind:"disc",tag:"circle",cx:572,cy:258,r:38},
-          {kind:"triangle",tag:"polygon",points:"736,214 786,300 688,294"},
-          {kind:"square",tag:"rect",x:862,y:222,w:72,h:72},
-
-          {kind:"rectangle",tag:"rect",x:86,y:382,w:76,h:86},
-          {kind:"disc",tag:"circle",cx:258,cy:420,r:34},
-          {kind:"triangle",tag:"polygon",points:"414,378 464,464 366,460"},
-          {kind:"square",tag:"rect",x:564,y:386,w:72,h:72},
-          {kind:"rectangle",tag:"rect",x:708,y:382,w:86,h:72},
-          {kind:"triangle",tag:"polygon",points:"884,376 932,460 838,456"}
-        ],
-        reward:()=>rewardPanel("SUPER !","Encore un exercice réussi.","#e8f4ff","#86cb7e")
-      },
-      {
-        title:"Formes isolées — série D",
-        shapes:[
-          {kind:"triangle",tag:"polygon",points:"102,82 154,168 58,164"},
-          {kind:"rectangle",tag:"rect",x:220,y:80,w:76,h:84},
-          {kind:"disc",tag:"circle",cx:418,cy:118,r:34},
-          {kind:"square",tag:"rect",x:536,y:86,w:70,h:70},
-          {kind:"triangle",tag:"polygon",points:"734,76 782,160 688,158"},
-          {kind:"rectangle",tag:"rect",x:852,y:82,w:84,h:72},
-
-          {kind:"disc",tag:"circle",cx:114,y:266,r:38},
-          {kind:"square",tag:"rect",x:236,y:228,w:74,h:74},
-          {kind:"rectangle",tag:"rect",x:392,y:228,w:82,h:72},
-          {kind:"triangle",tag:"polygon",points:"576,222 626,308 528,304"},
-          {kind:"disc",tag:"circle",cx:746,y:266,r:36},
-          {kind:"square",tag:"rect",x:858,y:230,w:72,h:72},
-
-          {kind:"rectangle",tag:"rect",x:98,y:386,w:84,h:72},
-          {kind:"triangle",tag:"polygon",points:"260,382 308,466 214,462"},
-          {kind:"disc",tag:"circle",cx:424,y:422,r:34},
-          {kind:"square",tag:"rect",x:546,y:388,w:72,h:72},
-          {kind:"rectangle",tag:"rect",x:706,y:382,w:74,h:84},
-          {kind:"triangle",tag:"polygon",points:"892,378 938,460 846,458"}
-        ],
-        reward:()=>rewardPanel("TRÈS BIEN !","Tu continues à progresser.","#edf7ff","#90cd88")
-      }
-    ]
-  },
-
-  2:{
-    label:"Niveau 2",
-    exercises:[
-      {
-        title:"La maison",
-        shapes:[
-          {kind:"triangle",tag:"polygon",points:"180,235 300,145 420,235"},
-          {kind:"rectangle",tag:"rect",x:208,y:235,w:184,h:132},
-          {kind:"square",tag:"rect",x:236,y:265,w:42,h:42},
-          {kind:"rectangle",tag:"rect",x:320,y:260,w:34,h:107},
-          {kind:"square",tag:"rect",x:290,y:286,w:44,h:44},
-          {kind:"disc",tag:"circle",cx:560,y:110,r:34},
-          {kind:"rectangle",tag:"rect",x:90,y:256,w:28,h:112},
-          {kind:"disc",tag:"circle",cx:104,y:224,r:58},
-          {kind:"triangle",tag:"polygon",points:"490,355 536,282 582,355"},
-          {kind:"rectangle",tag:"rect",x:510,y:355,w:52,h:64},
-          {kind:"rectangle",tag:"rect",x:660,y:318,w:120,h:54},
-          {kind:"disc",tag:"circle",cx:686,y:380,r:22},
-          {kind:"disc",tag:"circle",cx:754,y:380,r:22},
-          {kind:"triangle",tag:"polygon",points:"704,270 754,318 654,318"},
-          {kind:"other",tag:"ellipse",cx:742,y:122,rx:74,ry:22},
-          {kind:"other",tag:"polygon",points:"848,370 878,330 908,370 892,410 862,410"},
-          {kind:"rectangle",tag:"rect",x:838,y:352,w:56,h:42},
-          {kind:"triangle",tag:"polygon",points:"126,422 160,366 194,422"}
-        ],
-        reward:()=>rewardHouse()
-      },
-      {
-        title:"Le train",
-        shapes:[
-          {kind:"triangle",tag:"polygon",points:"120,322 174,282 174,362"},
-          {kind:"rectangle",tag:"rect",x:144,y:322,w:414,h:68},
-          {kind:"rectangle",tag:"rect",x:392,y:242,w:128,h:80},
-          {kind:"triangle",tag:"polygon",points:"368,242 430,194 492,242"},
-          {kind:"triangle",tag:"polygon",points:"430,242 492,194 554,242"},
-          {kind:"rectangle",tag:"rect",x:236,y:244,w:32,h:78},
-          {kind:"rectangle",tag:"rect",x:224,y:228,w:56,h:16},
-          {kind:"rectangle",tag:"rect",x:420,y:258,w:50,h:38},
-          {kind:"rectangle",tag:"rect",x:286,y:338,w:76,h:28},
-          {kind:"disc",tag:"circle",cx:244,y:408,r:34},
-          {kind:"disc",tag:"circle",cx:356,y:408,r:34},
-          {kind:"disc",tag:"circle",cx:468,y:408,r:34},
-          {kind:"disc",tag:"circle",cx:244,y:408,r:16},
-          {kind:"disc",tag:"circle",cx:356,y:408,r:16},
-          {kind:"disc",tag:"circle",cx:468,y:408,r:16},
-          {kind:"triangle",tag:"polygon",points:"654,360 694,300 734,360"},
-          {kind:"rectangle",tag:"rect",x:672,y:360,w:44,h:58},
-          {kind:"other",tag:"ellipse",cx:142,y:100,rx:74,ry:22},
-          {kind:"other",tag:"ellipse",cx:760,y:100,rx:82,ry:24},
-          {kind:"rectangle",tag:"rect",x:798,y:334,w:92,h:44}
-        ],
-        reward:()=>rewardTrain()
-      },
-      {
-        title:"Le robot",
-        shapes:[
-          {kind:"square",tag:"rect",x:404,y:154,w:118,h:118},
-          {kind:"square",tag:"rect",x:428,y:180,w:22,h:22},
-          {kind:"square",tag:"rect",x:474,y:180,w:22,h:22},
-          {kind:"rectangle",tag:"rect",x:454,y:210,w:18,h:34},
-          {kind:"triangle",tag:"polygon",points:"430,154 463,112 496,154"},
-          {kind:"rectangle",tag:"rect",x:382,y:272,w:162,h:116},
-          {kind:"rectangle",tag:"rect",x:346,y:294,w:36,h:22},
-          {kind:"rectangle",tag:"rect",x:544,y:294,w:36,h:22},
-          {kind:"rectangle",tag:"rect",x:416,y:302,w:30,h:90},
-          {kind:"rectangle",tag:"rect",x:480,y:302,w:30,h:90},
-          {kind:"rectangle",tag:"rect",x:410,y:388,w:26,h:80},
-          {kind:"rectangle",tag:"rect",x:490,y:388,w:26,h:80},
-          {kind:"rectangle",tag:"rect",x:332,y:468,w:78,h:30},
-          {kind:"rectangle",tag:"rect",x:516,y:468,w:78,h:30},
-          {kind:"disc",tag:"circle",cx:420,y:116,r:12},
-          {kind:"disc",tag:"circle",cx:506,y:116,r:12},
-          {kind:"triangle",tag:"polygon",points:"240,420 286,340 332,420"},
-          {kind:"triangle",tag:"polygon",points:"594,420 640,340 686,420"},
-          {kind:"other",tag:"polygon",points:"170,470 200,420 240,450 228,500 184,502"},
-          {kind:"other",tag:"ellipse",cx:760,y:120,rx:70,ry:22}
-        ],
-        reward:()=>rewardRobot()
-      },
-      {
-        title:"La fusée",
-        shapes:[
-          {kind:"triangle",tag:"polygon",points:"468,110 528,210 408,210"},
-          {kind:"rectangle",tag:"rect",x:424,y:210,w:88,h:188},
-          {kind:"disc",tag:"circle",cx:468,y:268,r:28},
-          {kind:"triangle",tag:"polygon",points:"424,326 376,388 424,376"},
-          {kind:"triangle",tag:"polygon",points:"512,326 560,388 512,376"},
-          {kind:"rectangle",tag:"rect",x:446,y:398,w:44,h:70},
-          {kind:"triangle",tag:"polygon",points:"468,468 500,522 436,522"},
-          {kind:"disc",tag:"circle",cx:188,y:128,r:20},
-          {kind:"disc",tag:"circle",cx:792,y:118,r:20},
-          {kind:"rectangle",tag:"rect",x:176,y:350,w:86,h:62},
-          {kind:"triangle",tag:"polygon",points:"219,286 262,350 176,350"},
-          {kind:"square",tag:"rect",x:192,y:412,w:40,h:40},
-          {kind:"rectangle",tag:"rect",x:716,y:346,w:84,h:62},
-          {kind:"triangle",tag:"polygon",points:"758,286 802,346 714,346"},
-          {kind:"square",tag:"rect",x:734,y:408,w:40,h:40},
-          {kind:"other",tag:"ellipse",cx:310,y:486,rx:56,ry:18},
-          {kind:"other",tag:"ellipse",cx:632,y:486,rx:56,ry:18},
-          {kind:"other",tag:"polygon",points:"862,470 892,432 922,470 908,506 876,506"}
-        ],
-        reward:()=>rewardRocket()
-      }
-    ]
-  },
-
-  3:{
-    label:"Niveau 3",
-    exercises:[
-      {
-        title:"Le village",
-        shapes:[
-          {kind:"triangle",tag:"polygon",points:"72,238 132,190 192,238"},
-          {kind:"rectangle",tag:"rect",x:92,y:238,w:80,h:104},
-          {kind:"square",tag:"rect",x:106,y:268,w:24,h:24},
-          {kind:"rectangle",tag:"rect",x:142,y:278,w:20,h:64},
-
-          {kind:"triangle",tag:"polygon",points:"238,238 298,190 358,238"},
-          {kind:"rectangle",tag:"rect",x:258,y:238,w:80,h:104},
-          {kind:"square",tag:"rect",x:272,y:268,w:24,h:24},
-          {kind:"rectangle",tag:"rect",x:308,y:278,w:20,h:64},
-
-          {kind:"triangle",tag:"polygon",points:"420,252 470,182 520,252"},
-          {kind:"rectangle",tag:"rect",x:450,y:252,w:40,h:92},
-          {kind:"rectangle",tag:"rect",x:492,y:262,w:120,h:40},
-
-          {kind:"triangle",tag:"polygon",points:"720,362 756,306 792,362"},
-          {kind:"rectangle",tag:"rect",x:736,y:362,w:40,h:58},
-          {kind:"rectangle",tag:"rect",x:782,y:254,w:30,h:108},
-          {kind:"rectangle",tag:"rect",x:748,y:420,w:90,h:52},
-
-          {kind:"rectangle",tag:"rect",x:84,y:402,w:76,h:52},
-          {kind:"square",tag:"rect",x:230,y:406,w:44,h:44},
-          {kind:"triangle",tag:"polygon",points:"324,446 356,394 388,446"},
-          {kind:"rectangle",tag:"rect",x:432,y:408,w:74,h:44},
-          {kind:"other",tag:"polygon",points:"604,440 634,390 664,440 650,484 618,484"},
-          {kind:"square",tag:"rect",x:834,y:406,w:46,h:46},
-
-          {kind:"disc",tag:"circle",cx:246,y:82,r:18},
-          {kind:"disc",tag:"circle",cx:326,y:82,r:18},
-          {kind:"disc",tag:"circle",cx:756,y:76,r:58},
-          {kind:"disc",tag:"circle",cx:846,y:88,r:46},
-          {kind:"other",tag:"ellipse",cx:138,y:86,rx:78,ry:20},
-          {kind:"other",tag:"ellipse",cx:580,y:76,rx:70,ry:20}
-        ],
-        reward:()=>rewardVillage()
-      },
-      {
-        title:"La ville",
-        shapes:[
-          {kind:"rectangle",tag:"rect",x:60,y:146,w:116,h:210},
-          {kind:"square",tag:"rect",x:82,y:178,w:34,h:34},
-          {kind:"square",tag:"rect",x:126,y:178,w:34,h:34},
-          {kind:"rectangle",tag:"rect",x:108,y:254,w:26,h:102},
-
-          {kind:"rectangle",tag:"rect",x:234,y:124,w:130,h:232},
-          {kind:"square",tag:"rect",x:260,y:164,w:38,h:38},
-          {kind:"square",tag:"rect",x:312,y:164,w:38,h:38},
-          {kind:"rectangle",tag:"rect",x:286,y:246,w:24,h:110},
-
-          {kind:"rectangle",tag:"rect",x:430,y:260,w:160,h:46},
-          {kind:"disc",tag:"circle",cx:462,y:318,r:20},
-          {kind:"disc",tag:"circle",cx:556,y:318,r:20},
-
-          {kind:"rectangle",tag:"rect",x:684,y:156,w:106,h:200},
-          {kind:"rectangle",tag:"rect",x:706,y:194,w:30,h:70},
-          {kind:"rectangle",tag:"rect",x:746,y:200,w:24,h:80},
-
-          {kind:"rectangle",tag:"rect",x:610,y:242,w:28,h:114},
-          {kind:"disc",tag:"circle",cx:624,y:208,r:54},
-
-          {kind:"triangle",tag:"polygon",points:"836,392 872,336 908,392"},
-          {kind:"rectangle",tag:"rect",x:852,y:392,w:42,h:56},
-          {kind:"rectangle",tag:"rect",x:62,y:408,w:92,h:52},
-          {kind:"square",tag:"rect",x:194,y:412,w:44,h:44},
-          {kind:"triangle",tag:"polygon",points:"300,448 332,396 364,448"},
-          {kind:"disc",tag:"circle",cx:422,y:430,r:22},
-          {kind:"rectangle",tag:"rect",x:486,y:412,w:90,h:48},
-          {kind:"other",tag:"polygon",points:"666,440 696,394 730,440 716,484 682,484"},
-          {kind:"square",tag:"rect",x:930,y:414,w:40,h:40},
-
-          {kind:"disc",tag:"circle",cx:886,y:76,r:42},
-          {kind:"other",tag:"ellipse",cx:166,y:82,rx:74,ry:20},
-          {kind:"other",tag:"ellipse",cx:438,y:74,rx:68,ry:18}
-        ],
-        reward:()=>rewardCity()
-      },
-      {
-        title:"Le port",
-        shapes:[
-          {kind:"rectangle",tag:"rect",x:106,y:308,w:164,h:50},
-          {kind:"other",tag:"polygon",points:"88,358 298,358 264,406 128,406"},
-          {kind:"triangle",tag:"polygon",points:"220,138 220,308 378,308"},
-          {kind:"rectangle",tag:"rect",x:204,y:136,w:16,h:196},
-          {kind:"disc",tag:"circle",cx:140,y:334,r:16},
-          {kind:"disc",tag:"circle",cx:202,y:334,r:16},
-          {kind:"disc",tag:"circle",cx:560,y:84,r:16},
-          {kind:"disc",tag:"circle",cx:612,y:84,r:16},
-
-          {kind:"triangle",tag:"polygon",points:"476,212 526,152 576,212"},
-          {kind:"rectangle",tag:"rect",x:496,y:212,w:60,h:86},
-          {kind:"rectangle",tag:"rect",x:474,y:298,w:104,h:50},
-          {kind:"disc",tag:"circle",cx:500,y:360,r:20},
-          {kind:"disc",tag:"circle",cx:552,y:360,r:20},
-
-          {kind:"rectangle",tag:"rect",x:702,y:182,w:34,h:148},
-          {kind:"disc",tag:"circle",cx:719,y:148,r:68},
-          {kind:"rectangle",tag:"rect",x:780,y:286,w:110,h:44},
-          {kind:"square",tag:"rect",x:802,y:242,w:44,h:44},
-          {kind:"triangle",tag:"polygon",points:"836,204 872,242 800,242"},
-
-          {kind:"rectangle",tag:"rect",x:90,y:432,w:66,h:40},
-          {kind:"square",tag:"rect",x:220,y:426,w:40,h:40},
-          {kind:"triangle",tag:"polygon",points:"312,466 340,420 368,466"},
-          {kind:"rectangle",tag:"rect",x:430,y:430,w:74,h:40},
-          {kind:"other",tag:"polygon",points:"620,458 648,418 676,458 664,494 632,494"},
-          {kind:"square",tag:"rect",x:840,y:428,w:42,h:42},
-
-          {kind:"other",tag:"ellipse",cx:138,y:86,rx:78,ry:20},
-          {kind:"other",tag:"ellipse",cx:840,y:94,rx:74,ry:20}
-        ],
-        reward:()=>rewardHarbor()
-      },
-      {
-        title:"Le parc",
-        shapes:[
-          {kind:"rectangle",tag:"rect",x:118,y:246,w:26,h:128},
-          {kind:"disc",tag:"circle",cx:131,y:212,r:62},
-          {kind:"rectangle",tag:"rect",x:260,y:246,w:26,h:128},
-          {kind:"disc",tag:"circle",cx:273,y:212,r:62},
-          {kind:"rectangle",tag:"rect",x:170,y:322,w:140,h:28},
-          {kind:"rectangle",tag:"rect",x:188,y:350,w:22,h:70},
-          {kind:"rectangle",tag:"rect",x:270,y:350,w:22,h:70},
-
-          {kind:"triangle",tag:"polygon",points:"470,172 518,250 422,250"},
-          {kind:"rectangle",tag:"rect",x:454,y:250,w:32,h:92},
-          {kind:"rectangle",tag:"rect",x:604,y:250,w:26,h:124},
-          {kind:"disc",tag:"circle",cx:617,y:214,r:60},
-
-          {kind:"triangle",tag:"polygon",points:"740,352 776,294 812,352"},
-          {kind:"rectangle",tag:"rect",x:756,y:352,w:40,h:56},
-          {kind:"rectangle",tag:"rect",x:838,y:322,w:104,h:42},
-          {kind:"disc",tag:"circle",cx:864,y:382,r:18},
-          {kind:"disc",tag:"circle",cx:916,y:382,r:18},
-
-          {kind:"square",tag:"rect",x:86,y:430,w:40,h:40},
-          {kind:"triangle",tag:"polygon",points:"218,470 246,426 274,470"},
-          {kind:"rectangle",tag:"rect",x:344,y:430,w:66,h:40},
-          {kind:"other",tag:"polygon",points:"492,456 520,418 548,456 536,492 504,492"},
-          {kind:"square",tag:"rect",x:650,y:430,w:42,h:42},
-          {kind:"disc",tag:"circle",cx:778,y:438,r:20},
-
-          {kind:"disc",tag:"circle",cx:882,y:88,r:40},
-          {kind:"other",tag:"ellipse",cx:162,y:88,rx:74,ry:20},
-          {kind:"other",tag:"ellipse",cx:470,y:84,rx:70,ry:18}
-        ],
-        reward:()=>rewardPark()
-      }
-    ]
-  }
-};
-
-let state = {
-  level: 1,
-  exercise: 0,
-  choice: "square",
-  order: []
-};
-
-function shuffledIndices(n){
-  const a = Array.from({length:n}, (_,i)=>i);
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-}
-const menuScreen = document.getElementById("menuScreen");
-const gameScreen = document.getElementById("gameScreen");
-const scene = document.getElementById("scene");
-const statusPill = document.getElementById("statusPill");
-const headerMeta = document.getElementById("headerMeta");
-const sceneTitle = document.getElementById("sceneTitle");
-const feedback = document.getElementById("feedback");
-const continueBtn = document.getElementById("continueBtn");
-
-function showMenu(){
-  gameScreen.classList.remove("active");
-  menuScreen.classList.add("active");
-}
-function showGame(){
-  menuScreen.classList.remove("active");
-  gameScreen.classList.add("active");
-}
-function currentExercises(){ return levels[state.level].exercises; }
-function currentExercise(){
-  const list = currentExercises();
-  const actualIndex = state.order[state.exercise] ?? state.exercise;
-  return list[actualIndex];
-}
-function shapeElement(s, attrs){
-  if(s.tag==="rect") return `<rect ${attrs} x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="${s.rx||0}"/>`;
-  if(s.tag==="circle") return `<circle ${attrs} cx="${s.cx}" cy="${s.cy}" r="${s.r}"/>`;
-  if(s.tag==="ellipse") return `<ellipse ${attrs} cx="${s.cx}" cy="${s.cy}" rx="${s.rx}" ry="${s.ry}"/>`;
-  return `<polygon ${attrs} points="${s.points}"/>`;
-}
-function shapeSvg(s, idx){
-  return shapeElement(s, `data-idx="${idx}" data-kind="${s.kind}" class="clickable unanswered exercise"`);
-}
-function contourSvg(s){
-  return shapeElement(s, `class="contourOverlay exercise"`);
-}
-function bindShapes(){
-  scene.querySelectorAll(".clickable").forEach(el=>{
-    el.addEventListener("click",()=>{
-      el.dataset.answer = state.choice;
-      el.style.fill = COLORS[state.choice];
-      el.classList.remove("unanswered","errorMark");
-      updateStatus();
-    });
-  });
-}
-function updateStatus(){
-  const shapes = [...scene.querySelectorAll(".clickable")];
-  const done = shapes.filter(s=>s.dataset.answer).length;
-  statusPill.textContent = `${done} / ${shapes.length} classées`;
-}
-function renderExercise(){
-  const ex = currentExercise();
-  const filledShapes = ex.shapes.map(shapeSvg).join("");
-  const topContours = ex.shapes.map(contourSvg).join("");
-  scene.innerHTML = filledShapes + topContours + ex.reward();
-  bindShapes();
-  sceneTitle.textContent = ex.title;
-  headerMeta.textContent = `${levels[state.level].label} · Exercice ${state.exercise+1} / ${currentExercises().length} · ordre aléatoire`;
-  feedback.className = "feedback";
-  feedback.textContent = "Choisis une catégorie, puis clique sur les zones.";
-  continueBtn.classList.remove("show");
-  updateStatus();
-}
-function clearErrorMarks(){
-  scene.querySelectorAll(".errorMark").forEach(el=>el.classList.remove("errorMark"));
-}
-function validate(){
-  const shapes = [...scene.querySelectorAll(".clickable")];
-  clearErrorMarks();
-  const unanswered = shapes.filter(s=>!s.dataset.answer);
-  if(unanswered.length){
-    feedback.className = "feedback bad";
-    feedback.textContent = `Il reste ${unanswered.length} zone${unanswered.length>1?"s":""} à classer.`;
-    unanswered.forEach(el=>el.classList.add("errorMark"));
-    return;
-  }
-  const wrong = shapes.filter(s=>s.dataset.answer !== s.dataset.kind);
-  if(wrong.length){
-    feedback.className = "feedback bad";
-    feedback.textContent = `Il reste ${wrong.length} erreur${wrong.length>1?"s":""}. Corrige les zones entourées puis revalide.`;
-    wrong.forEach(el=>el.classList.add("errorMark"));
-    return;
-  }
-
-  scene.querySelectorAll(".exercise").forEach(el=>el.classList.add("fade"));
-  scene.querySelectorAll(".reward").forEach(el=>el.classList.add("show"));
-  feedback.className = "feedback ok";
-  feedback.textContent = "Bravo ! Tout est juste.";
-  statusPill.textContent = "Exercice réussi";
-
-  const lastExercise = state.exercise === currentExercises().length - 1;
-  if(lastExercise && state.level < 3) continueBtn.textContent = "OK, passer au niveau suivant";
-  else if(lastExercise && state.level === 3) continueBtn.textContent = "OK, recommencer";
-  else continueBtn.textContent = "OK, continuer";
-  continueBtn.classList.add("show");
-}
-function resetExercise(){
-  scene.querySelectorAll(".clickable").forEach(el=>{
-    delete el.dataset.answer;
-    el.style.fill = "";
-    el.classList.add("unanswered");
-    el.classList.remove("errorMark","fade");
-  });
-  scene.querySelectorAll(".reward").forEach(el=>el.classList.remove("show"));
-  feedback.className = "feedback";
-  feedback.textContent = "Exercice effacé. Tu peux recommencer.";
-  continueBtn.classList.remove("show");
-  updateStatus();
-}
-function nextStep(){
-  if(state.exercise < currentExercises().length - 1){
-    state.exercise += 1;
-    renderExercise();
-    return;
-  }
-  if(state.level < 3){
-    state.level += 1;
-    state.exercise = 0;
-    state.order = shuffledIndices(levels[state.level].exercises.length);
-    renderExercise();
-    return;
-  }
-  state.exercise = 0;
-  state.order = shuffledIndices(levels[state.level].exercises.length);
-  renderExercise();
-}
+function buildPalette(){catList.innerHTML='';Object.keys(LABELS).forEach(cat=>{const b=document.createElement('button');b.className='cat-btn'+(cat===state.selected?' active':'');b.dataset.cat=cat;b.innerHTML=`<span class="icon-box" style="background:${COLORS[cat]}18">${iconSvg(cat)}</span><span>${LABELS[cat]}</span>`;b.addEventListener('click',()=>selectCategory(cat));catList.appendChild(b);});}
+function selectCategory(cat){if(state.solved)return;state.selected=cat;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));}
+function setStatus(text,type=''){statusEl.textContent=text;statusEl.className='status'+(type?` ${type}`:'');}
 function startLevel(level){
-  state.level = level;
-  state.exercise = 0;
-  state.order = shuffledIndices(levels[level].exercises.length);
-  showGame();
-  renderExercise();
+ state={level,order:shuffle(SCENES[level].map((_,i)=>i)),index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,score:0,total:SCENES[level].reduce((n,s)=>n+s.shapes.length,0),saved:false};
+ home.classList.add('hidden');game.classList.remove('hidden');buildPalette();loadScene();
+}
+function currentScene(){return SCENES[state.level][state.order[state.index]];}
+function makeEl(tag,attrs){const el=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>el.setAttribute(k,v));return el;}
+function drawRewardBackground(theme){
+ const g=makeEl('g',{class:'reward-bg'});
+ const add=(tag,attrs)=>g.appendChild(makeEl(tag,attrs));
+ const cloud=(x,y,s=1)=>{
+   add('ellipse',{cx:x,cy:y,rx:42*s,ry:18*s,fill:'#ffffff',opacity:.94});
+   add('ellipse',{cx:x+36*s,cy:y-6*s,rx:32*s,ry:14*s,fill:'#ffffff',opacity:.94});
+   add('ellipse',{cx:x+72*s,cy:y+1*s,rx:38*s,ry:16*s,fill:'#ffffff',opacity:.94});
+ };
+ const bird=(x,y,s=1,color='#5f6f80')=>{
+   add('path',{d:`M ${x} ${y} q ${10*s} ${-10*s} ${20*s} 0 q ${10*s} ${-10*s} ${20*s} 0`,fill:'none',stroke:color,'stroke-width':2.4*s,'stroke-linecap':'round','stroke-linejoin':'round',opacity:.72});
+ };
+ const flower=(x,y,s=1)=>{
+   add('rect',{x:x-1.5*s,y:y-16*s,width:3*s,height:16*s,fill:'#5f9a5a',rx:1.2*s});
+   [[0,-22],[8,-18],[-8,-18],[6,-10],[-6,-10]].forEach(([dx,dy])=>add('circle',{cx:x+dx*s,cy:y+dy*s,r:5*s,fill:'#f28fb0'}));
+   add('circle',{cx:x,cy:y-16*s,r:4*s,fill:'#f4c94b'});
+ };
+ const fish=(x,y,s=1,color='#f29b50')=>{
+   add('ellipse',{cx:x,cy:y,rx:16*s,ry:9*s,fill:color,opacity:.95});
+   add('polygon',{points:`${x+16*s},${y} ${x+28*s},${y-8*s} ${x+28*s},${y+8*s}`,fill:color,opacity:.95});
+   add('circle',{cx:x-7*s,cy:y-2*s,r:1.8*s,fill:'#243246'});
+ };
+ const techPanel=(x,y,w,h,fill='#cdd8ea')=>{
+   add('rect',{x,y,width:w,height:h,rx:10,fill,stroke:'#8091a9','stroke-width':2,opacity:.92});
+   add('rect',{x:x+18,y:y+16,width:w-36,height:10,rx:5,fill:'#eef4fb',opacity:.72});
+   add('circle',{cx:x+26,cy:y+h-20,r:5,fill:'#61c08d'});
+   add('circle',{cx:x+46,cy:y+h-20,r:5,fill:'#f0c257'});
+   add('circle',{cx:x+66,cy:y+h-20,r:5,fill:'#df7a74'});
+ };
+ const gear=(cx,cy,r,fill='#91a2bf')=>{
+   for(let i=0;i<8;i++){
+     const a=i*Math.PI/4;
+     const x=cx+Math.cos(a)*(r+10)-6;
+     const y=cy+Math.sin(a)*(r+10)-6;
+     add('rect',{x,y,width:12,height:12,fill,transform:`rotate(${i*45} ${x+6} ${y+6})`,opacity:.95});
+   }
+   add('circle',{cx,cy,r,fill,stroke:'#70829d','stroke-width':3,opacity:.97});
+   add('circle',{cx,cy,r:r*.38,fill:'#e8eff8',stroke:'#70829d','stroke-width':2});
+ };
+
+ if(theme==='robot' || theme==='atelier'){
+   add('rect',{x:0,y:0,width:960,height:540,fill: theme==='robot' ? '#e9efe8' : '#eef3f7'});
+   add('rect',{x:0,y:405,width:960,height:135,fill: theme==='robot' ? '#d8e0d7' : '#dde5ef'});
+   add('rect',{x:0,y:382,width:960,height:26,fill:'#c5ced8'});
+   for(let x=70;x<=890;x+=145){ add('rect',{x,y:392,width:85,height:6,fill:'#a9b5c4',rx:3}); }
+   techPanel(38,62,146,112, theme==='robot' ? '#c8d4e3' : '#d8e1ef');
+   techPanel(770,54,152,122, theme==='robot' ? '#c8d4e3' : '#d8e1ef');
+   techPanel(120,220,118,86, '#d7deea');
+   techPanel(730,240,132,92, '#d7deea');
+   add('rect',{x:208,y:72,width:160,height:24,rx:12,fill:'#a8b6c9'});
+   add('rect',{x:592,y:82,width:138,height:24,rx:12,fill:'#a8b6c9'});
+   add('rect',{x:155,y:100,width:18,height:118,fill:'#a8b6c9'});
+   add('rect',{x:792,y:108,width:18,height:124,fill:'#a8b6c9'});
+   add('circle',{cx:164,cy:222,r:22,fill:'#7f92ad'}); add('circle',{cx:801,cy:236,r:22,fill:'#7f92ad'});
+   gear(252,452,34,'#9aabc0'); gear(710,452,38,'#9aabc0');
+   add('rect',{x:375,y:76,width:210,height:18,rx:9,fill:'#b1bfd0'});
+   add('rect',{x:388,y:104,width:184,height:12,rx:6,fill:'#cad6e4'});
+   add('circle',{cx:430,cy:145,r:10,fill:'#7ac48a'}); add('circle',{cx:480,cy:145,r:10,fill:'#f0c257'}); add('circle',{cx:530,cy:145,r:10,fill:'#e27b72'});
+ }
+ else if(theme==='sea'){
+   add('rect',{x:0,y:0,width:960,height:270,fill:'#ebf8fc'});
+   add('circle',{cx:845,cy:90,r:52,fill:'#fde38d'});
+   cloud(125,108,1); cloud(300,82,.84); cloud(650,112,.9);
+   bird(178,126,.8); bird(224,114,.7); bird(758,132,.8); bird(800,120,.62);
+   add('rect',{x:0,y:270,width:960,height:270,fill:'#d7eef6'});
+   add('path',{d:'M0 310 Q50 292 100 310 T200 310 T300 310 T400 310 T500 310 T600 310 T700 310 T800 310 T900 310 T960 310 L960 540 L0 540 Z',fill:'#a9d6e7'});
+   add('path',{d:'M0 348 Q60 332 120 348 T240 348 T360 348 T480 348 T600 348 T720 348 T840 348 T960 348 L960 540 L0 540 Z',fill:'#8cc7de',opacity:.95});
+   fish(135,438,.85,'#f0a150'); fish(248,404,.72,'#7bb7d8'); fish(810,430,.92,'#ef8b7a'); fish(690,472,.7,'#78c08f');
+   add('path',{d:'M150 508 q 18 -24 36 0 q 18 -24 36 0',fill:'none',stroke:'#6e9f7a','stroke-width':5,opacity:.72});
+   add('path',{d:'M805 500 q 18 -24 36 0 q 18 -24 36 0',fill:'none',stroke:'#6e9f7a','stroke-width':5,opacity:.72});
+ }
+ else if(theme==='space' || theme==='spacebase'){
+   add('rect',{x:0,y:0,width:960,height:540,fill:'#151c30'});
+   add('circle',{cx:805,cy:94,r:40,fill:'#f7d989'});
+   add('circle',{cx:720,cy:140,r:58,fill:'#4f5f8e'});
+   add('circle',{cx:845,cy:170,r:24,fill:'#d07b92'});
+   [[90,80],[170,155],[745,85],[875,210],[320,85],[650,175],[555,58],[118,220],[405,115],[910,100],[835,160],[264,174],[566,126],[608,66],[760,48]].forEach(([cx,cy])=>add('circle',{cx,cy,r:3,fill:'#d8dfef'}));
+   add('polygon',{points:'0,412 120,370 240,394 360,352 520,404 690,364 860,396 960,378 960,540 0,540',fill:'#303d5c'});
+   add('polygon',{points:'0,446 90,418 210,442 340,402 500,448 670,420 815,446 960,432 960,540 0,540',fill:'#455277'});
+   if(theme==='spacebase'){
+     add('rect',{x:150,y:395,width:120,height:72,rx:14,fill:'#c9d4e7',opacity:.9});
+     add('rect',{x:190,y:355,width:40,height:42,fill:'#a9b9cf'});
+     add('ellipse',{cx:210,cy:356,rx:46,ry:20,fill:'#d9e4f5',opacity:.95});
+     add('rect',{x:642,y:398,width:146,height:68,rx:16,fill:'#c9d4e7',opacity:.9});
+     add('rect',{x:690,y:345,width:20,height:54,fill:'#a9b9cf'});
+     add('circle',{cx:700,cy:340,r:22,fill:'#dbe6f7'});
+   }
+ }
+ else {
+   add('rect',{x:0,y:0,width:960,height:300,fill:'#eaf3fb'});
+   add('circle',{cx:838,cy:92,r:48,fill:'#fde48a'});
+   cloud(122,106,.94); cloud(300,86,.76); cloud(652,112,.88);
+   bird(182,142,.78); bird(226,130,.65); bird(744,126,.8); bird(792,116,.58);
+   add('polygon',{points:'0,356 110,298 240,342 350,284 470,340 600,270 760,342 960,286 960,540 0,540',fill:'#dbe8d0'});
+   add('polygon',{points:'0,390 150,340 280,386 430,332 590,394 760,350 960,402 960,540 0,540',fill:'#cfe1c4'});
+
+   if(theme==='train' || theme==='station'){
+     add('rect',{x:0,y:420,width:960,height:120,fill:'#dfe6dc'});
+     add('rect',{x:0,y:448,width:960,height:16,fill:'#7b5b45'});
+     add('rect',{x:0,y:474,width:960,height:12,fill:'#8a90a0'});
+     add('rect',{x:90,y:240,width:120,height:90,fill:'#d7dee8',stroke:'#99a7b7','stroke-width':2,opacity:.92});
+     add('polygon',{points:'82,240 150,198 220,240',fill:'#b25b56',opacity:.9});
+     add('rect',{x:748,y:222,width:94,height:70,fill:'#d7dee8',stroke:'#99a7b7','stroke-width':2,opacity:.92});
+     add('rect',{x:778,y:188,width:8,height:34,fill:'#8796aa'});
+     add('circle',{cx:782,cy:176,r:12,fill:'#df7a74'});
+     add('ellipse',{cx:186,cy:188,rx:18,ry:12,fill:'#d3dbe6',opacity:.76});
+     add('ellipse',{cx:206,cy:174,rx:14,ry:10,fill:'#d3dbe6',opacity:.62});
+   }
+   if(theme==='road' || theme==='construction' || theme==='village' || theme==='park'){
+     add('rect',{x:0,y:440,width:960,height:68,fill:'#b9bec8'});
+     [[70,473],[220,473],[370,473],[520,473],[670,473],[820,473]].forEach(([x,y])=>add('rect',{x,y,width:78,height:7,fill:'#f7f7f7'}));
+   }
+   if(theme==='construction'){
+     add('rect',{x:92,y:224,width:20,height:120,fill:'#caa449'});
+     add('rect',{x:112,y:224,width:116,height:16,fill:'#caa449'});
+     add('polygon',{points:'202,240 238,240 228,272 192,272',fill:'#e5964a'});
+     add('rect',{x:784,y:388,width:100,height:12,fill:'#a67963'});
+     add('polygon',{points:'772,400 800,355 828,400',fill:'#e5964a'});
+   }
+   if(theme==='village' || theme==='park'){
+     add('rect',{x:0,y:506,width:960,height:34,fill:'#cfd8bf'});
+     [70,120,178,236,812,862,705].forEach((x,i)=>flower(x,506,(i%2?0.78:0.92)));
+     add('rect',{x:140,y:352,width:16,height:74,fill:'#8f775e'}); add('circle',{cx:148,cy:334,r:34,fill:'#82b97a'});
+     add('rect',{x:792,y:344,width:16,height:74,fill:'#8f775e'}); add('circle',{cx:800,cy:324,r:36,fill:'#85bf7c'});
+   }
+   if(theme==='park'){
+     add('rect',{x:365,y:388,width:84,height:12,rx:4,fill:'#99755d'});
+     add('rect',{x:378,y:360,width:10,height:28,fill:'#7b8599'}); add('rect',{x:426,y:360,width:10,height:28,fill:'#7b8599'});
+   }
+ }
+ svg.appendChild(g);
+}
+function createShape(shape,i){
+ let el;
+ if(shape.kind==='rect')el=makeEl('rect',{x:shape.x,y:shape.y,width:shape.w,height:shape.h,rx:shape.expected==='square'?2:1});
+ if(shape.kind==='circle')el=makeEl('circle',{cx:shape.cx,cy:shape.cy,r:shape.r});
+ if(shape.kind==='ellipse')el=makeEl('ellipse',{cx:shape.cx,cy:shape.cy,rx:shape.rx,ry:shape.ry});
+ if(shape.kind==='polygon')el=makeEl('polygon',{points:shape.points});
+ if(shape.rot){
+   const cx=shape.kind==='rect'?shape.x+shape.w/2:shape.cx,cy=shape.kind==='rect'?shape.y+shape.h/2:shape.cy;
+   el.setAttribute('transform',`rotate(${shape.rot} ${cx} ${cy})`);
+ }
+ el.classList.add('scene-shape');el.dataset.index=i;el.dataset.expected=shape.expected;el.dataset.reward=shape.reward||'#cbd5e1';el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',`Zone ${i+1}`);
+ el.addEventListener('click',()=>paint(i));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();paint(i);}});
+ return el;
+}
+function loadScene(){
+ const scene=currentScene();state.answers=Array(scene.shapes.length).fill(null);state.solved=false;state.firstCompleteValidated=false;
+ svg.innerHTML='';svg.classList.remove('reward-mode');drawRewardBackground(scene.theme);
+ scene.shapes.forEach((s,i)=>svg.appendChild(createShape(s,i)));
+ progressTitle.textContent=`Niveau ${state.level} · Exercice ${state.index+1} / ${state.order.length}`;sceneTitle.textContent=scene.title;
+ validateBtn.disabled=false;clearBtn.disabled=false;continueBtn.classList.add('hidden');
+ setStatus('Choisis une catégorie puis classe chaque zone.');updateCount();fitScene();
+}
+function fitScene(){requestAnimationFrame(()=>{
+ const shapes=[...svg.querySelectorAll('.scene-shape')];if(!shapes.length)return;
+ let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+ shapes.forEach(el=>{const b=el.getBBox();minX=Math.min(minX,b.x);minY=Math.min(minY,b.y);maxX=Math.max(maxX,b.x+b.width);maxY=Math.max(maxY,b.y+b.height);});
+ const pad=42;minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(960,maxX+pad);maxY=Math.min(540,maxY+pad);
+ svg.setAttribute('viewBox',`${minX} ${minY} ${Math.max(100,maxX-minX)} ${Math.max(100,maxY-minY)}`);
+});}
+function paint(i){if(state.solved)return;state.answers[i]=state.selected;const el=svg.querySelector(`.scene-shape[data-index="${i}"]`);el.style.fill=COLORS[state.selected];el.classList.remove('error','unclassified');updateCount();}
+function updateCount(){const n=state.answers.filter(Boolean).length;classifiedCount.textContent=`${n} / ${state.answers.length} classées`;}
+function clearScene(){if(state.solved)return;state.answers.fill(null);svg.querySelectorAll('.scene-shape').forEach(el=>{el.style.fill='';el.classList.remove('error','unclassified');});setStatus('Exercice effacé. Tu peux recommencer.');updateCount();}
+function validate(){
+ if(state.solved)return;const scene=currentScene();const missing=state.answers.filter(a=>!a).length;
+ svg.querySelectorAll('.scene-shape').forEach(el=>el.classList.remove('error','unclassified'));
+ if(missing){state.answers.forEach((a,i)=>{if(!a)svg.querySelector(`.scene-shape[data-index="${i}"]`).classList.add('unclassified');});setStatus(`Il reste ${missing} zone${missing>1?'s':''} à classer.`,'error-text');return;}
+ if(!state.firstCompleteValidated){let firstScore=0;scene.shapes.forEach((s,i)=>{if(state.answers[i]===s.expected)firstScore++;});state.score+=firstScore;state.firstCompleteValidated=true;}
+ let errors=0;scene.shapes.forEach((s,i)=>{if(state.answers[i]!==s.expected){errors++;svg.querySelector(`.scene-shape[data-index="${i}"]`).classList.add('error');}});
+ if(errors){setStatus(`Il reste ${errors} erreur${errors>1?'s':''}. Corrige les zones entourées puis revalide.`,'error-text');return;}
+ succeed();
+}
+function succeed(){
+ state.solved=true;const scene=currentScene();svg.classList.add('reward-mode');svg.querySelectorAll('.scene-shape').forEach((el,i)=>{el.classList.remove('error','unclassified');el.classList.add('locked');el.style.fill=scene.shapes[i].reward||'#cbd5e1';el.style.stroke='#2a3446';});
+ setStatus('Bravo ! Tout est juste.','success-text');validateBtn.disabled=true;clearBtn.disabled=true;
+ const last=state.index===state.order.length-1;
+ if(last){saveLevelResult();continueBtn.textContent=state.level<3?'OK, passer au niveau suivant':'OK, recommencer';}
+ else continueBtn.textContent='OK, continuer';
+ continueBtn.classList.remove('hidden');
+}
+function next(){
+ const last=state.index===state.order.length-1;
+ if(!last){state.index++;loadScene();return;}
+ if(state.level<3){startLevel(state.level+1);}else{startLevel(3);}
+}
+function saveLevelResult(){if(state.saved)return;enregistrerScoreMathas(state.score,state.total,LEVELS[state.level].name);state.saved=true;}
+function enregistrerScoreMathas(score, total, niveau) {
+  const key = "mathas_scores_" + window.location.pathname.toLowerCase();
+  let scores = [];
+  try { scores = JSON.parse(localStorage.getItem(key)) || []; } catch { scores = []; }
+  scores.unshift({ score, total, niveau, date: new Date().toISOString() });
+  try { localStorage.setItem(key, JSON.stringify(scores.slice(0, 3))); } catch {}
 }
 
-document.querySelectorAll(".menuLevelBtn").forEach(btn=>{
-  btn.addEventListener("click",()=>startLevel(+btn.dataset.level));
-});
-document.getElementById("backBtn").addEventListener("click",showMenu);
-document.querySelectorAll(".shapeBtn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    state.choice = btn.dataset.choice;
-    document.querySelectorAll(".shapeBtn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-  });
-});
-document.getElementById("validateBtn").addEventListener("click", validate);
-document.getElementById("resetBtn").addEventListener("click", resetExercise);
-continueBtn.addEventListener("click", nextStep);
-
-setIcons();
-showMenu();
+document.querySelectorAll('.level-btn').forEach(b=>b.addEventListener('click',()=>startLevel(Number(b.dataset.level))));
+document.getElementById('menuBtn').addEventListener('click',()=>{game.classList.add('hidden');home.classList.remove('hidden');});
+validateBtn.addEventListener('click',validate);clearBtn.addEventListener('click',clearScene);continueBtn.addEventListener('click',next);
+buildPalette();
 </script>
 </body>
 </html>
