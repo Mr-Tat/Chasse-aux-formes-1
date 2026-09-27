@@ -17,6 +17,10 @@ button{font:inherit}
 button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,.35);outline-offset:3px}
 .hidden{display:none!important}
 
+.master-btn{position:fixed;left:8px;bottom:8px;z-index:50;width:28px;height:28px;border:1px solid rgba(35,48,68,.12);border-radius:8px;background:rgba(255,255,255,.16);color:rgba(23,32,51,.20);font-weight:900;font-size:12px;cursor:pointer;opacity:.42;transition:opacity .16s ease,background .16s ease,color .16s ease,border-color .16s ease;backdrop-filter:blur(2px)}
+.master-btn:hover,.master-btn:focus-visible{opacity:.86;background:rgba(255,255,255,.72);color:rgba(23,32,51,.68);border-color:rgba(35,48,68,.22)}
+.master-btn.active{opacity:.58;color:rgba(107,52,67,.72);border-color:rgba(107,52,67,.24);background:rgba(255,255,255,.42)}
+
 #home{height:100dvh;display:grid;place-items:center;padding:24px;overflow:auto;background:
   radial-gradient(circle at 15% 15%,rgba(47,111,237,.10),transparent 30%),
   radial-gradient(circle at 85% 85%,rgba(132,87,217,.08),transparent 34%),#f7f9fc}
@@ -32,6 +36,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,
 .level-btn[data-level="1"]{background:#B97A86}.level-btn[data-level="2"]{background:#925160}.level-btn[data-level="3"]{background:#6B3443}
 .level-btn:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 11px 24px rgba(34,48,68,.16)}
 .level-btn strong{display:block;font-size:18px;margin-bottom:5px}.level-btn span{display:block;color:rgba(255,255,255,.92);font-size:14px;font-weight:750}
+.level-btn.locked{cursor:not-allowed;filter:saturate(.45) brightness(.82);box-shadow:none;opacity:.78}
+.level-btn.locked:hover{transform:none;filter:saturate(.45) brightness(.82);box-shadow:none}
+.level-btn .lock-line{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.055em}
+.level-btn .lock-count{font-size:12px;margin-top:3px;color:rgba(255,255,255,.82)}
 
 #game{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);padding:12px;gap:10px}
 .topbar{min-height:46px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
@@ -84,12 +92,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,
       <div class="intro-item"><div class="intro-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="20" fill="#8457d9"/></svg></div><span>Disque</span></div>
     </div>
     <div class="levels">
-      <button class="level-btn" data-level="1"><strong>Niveau 1</strong><span>Formes isolées</span></button>
-      <button class="level-btn" data-level="2"><strong>Niveau 2</strong><span>Dessins composés</span></button>
-      <button class="level-btn" data-level="3"><strong>Niveau 3</strong><span>Dessins complexes</span></button>
+      <button class="level-btn" data-level="1" data-label="Formes isolées"><strong>Niveau 1</strong><span>Formes isolées</span></button>
+      <button class="level-btn" data-level="2" data-label="Dessins composés"><strong>Niveau 2</strong><span>Dessins composés</span></button>
+      <button class="level-btn" data-level="3" data-label="Dessins complexes"><strong>Niveau 3</strong><span>Dessins complexes</span></button>
     </div>
   </div>
 </section>
+
+<button id="masterBtn" class="master-btn" type="button" aria-label="Mode enseignant" title="Mode enseignant">M</button>
 
 <section id="game" class="hidden">
   <header class="topbar">
@@ -265,7 +275,82 @@ const LEVELS={
 const home=document.getElementById('home'),game=document.getElementById('game'),svg=document.getElementById('sceneSvg');
 const catList=document.getElementById('catList'),statusEl=document.getElementById('status'),validateBtn=document.getElementById('validateBtn'),clearBtn=document.getElementById('clearBtn'),continueBtn=document.getElementById('continueBtn');
 const progressTitle=document.getElementById('progressTitle'),sceneTitle=document.getElementById('sceneTitle'),classifiedCount=document.getElementById('classifiedCount');
-let state={level:1,order:[],index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,score:0,total:0,saved:false};
+const masterBtn=document.getElementById('masterBtn');
+const PROGRESS_KEY = "mathas_formes_progress_" + window.location.pathname.toLowerCase();
+const MASTER_SESSION_KEY = "mathas_formes_master_session";
+let masterMode=false;
+try{masterMode=sessionStorage.getItem(MASTER_SESSION_KEY)==='1';}catch{}
+const UNLOCK_REQUIREMENTS={2:{sourceLevel:1,needed:2},3:{sourceLevel:2,needed:3}};
+let progress=loadProgress();
+let state={level:1,order:[],index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,firstAttemptPerfect:false,score:0,total:0,saved:false};
+
+function loadProgress(){
+ let data={perfect:{1:[],2:[],3:[]}};
+ try{
+   const saved=JSON.parse(localStorage.getItem(PROGRESS_KEY));
+   if(saved&&saved.perfect){
+     [1,2,3].forEach(level=>{
+       if(Array.isArray(saved.perfect[level])) data.perfect[level]=[...new Set(saved.perfect[level].filter(v=>typeof v==='string'))];
+     });
+   }
+ }catch{}
+ return data;
+}
+function saveProgress(){try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(progress));}catch{}}
+function perfectCount(level){return new Set(progress.perfect[level]||[]).size;}
+function levelUnlocked(level){
+ if(masterMode)return true;
+ if(level===1)return true;
+ const req=UNLOCK_REQUIREMENTS[level];
+ return perfectCount(req.sourceLevel)>=req.needed;
+}
+function updateLevelButtons(){
+ document.querySelectorAll('.level-btn').forEach(btn=>{
+   const level=Number(btn.dataset.level),span=btn.querySelector('span');
+   const unlocked=levelUnlocked(level);
+   btn.disabled=!unlocked;
+   btn.classList.toggle('locked',!unlocked);
+   btn.setAttribute('aria-disabled',String(!unlocked));
+   if(unlocked){
+     span.className='';
+     span.textContent=btn.dataset.label;
+   }else{
+     const req=UNLOCK_REQUIREMENTS[level];
+     const n=Math.min(perfectCount(req.sourceLevel),req.needed);
+     span.className='lock-line';
+     span.innerHTML=`Bloqué <span class="lock-count">${n}/${req.needed}</span>`;
+   }
+ });
+}
+function recordPerfectExercise(){
+ if(!state.firstAttemptPerfect)return false;
+ const scene=currentScene();
+ const key=scene.title;
+ const list=progress.perfect[state.level]||(progress.perfect[state.level]=[]);
+ if(list.includes(key))return false;
+ list.push(key);saveProgress();updateLevelButtons();return true;
+}
+
+function updateMasterButton(){
+ if(!masterBtn)return;
+ masterBtn.classList.toggle('active',masterMode);
+ masterBtn.setAttribute('aria-pressed',String(masterMode));
+ masterBtn.title=masterMode?'Mode enseignant actif':'Mode enseignant';
+}
+function requestMasterMode(){
+ if(masterMode)return;
+ const entered=window.prompt('Mot de passe enseignant :');
+ if(entered===null)return;
+ if(entered==='Thecakeisalie'){
+   masterMode=true;
+   try{sessionStorage.setItem(MASTER_SESSION_KEY,'1');}catch{}
+   updateMasterButton();
+   updateLevelButtons();
+   window.alert('Mode enseignant activé pour cette session. Tous les niveaux sont accessibles.');
+ }else{
+   window.alert('Mot de passe incorrect.');
+ }
+}
 
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function iconSvg(cat){
@@ -280,7 +365,8 @@ function buildPalette(){catList.innerHTML='';Object.keys(LABELS).forEach(cat=>{c
 function selectCategory(cat){if(state.solved)return;state.selected=cat;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));}
 function setStatus(text,type=''){statusEl.textContent=text;statusEl.className='status'+(type?` ${type}`:'');}
 function startLevel(level){
- state={level,order:shuffle(SCENES[level].map((_,i)=>i)),index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,score:0,total:SCENES[level].reduce((n,s)=>n+s.shapes.length,0),saved:false};
+ if(!levelUnlocked(level)){updateLevelButtons();return;}
+ state={level,order:shuffle(SCENES[level].map((_,i)=>i)),index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,firstAttemptPerfect:false,score:0,total:SCENES[level].reduce((n,s)=>n+s.shapes.length,0),saved:false};
  home.classList.add('hidden');game.classList.remove('hidden');buildPalette();loadScene();
 }
 function currentScene(){return SCENES[state.level][state.order[state.index]];}
@@ -431,7 +517,7 @@ function createShape(shape,i){
  return el;
 }
 function loadScene(){
- const scene=currentScene();state.answers=Array(scene.shapes.length).fill(null);state.solved=false;state.firstCompleteValidated=false;
+ const scene=currentScene();state.answers=Array(scene.shapes.length).fill(null);state.solved=false;state.firstCompleteValidated=false;state.firstAttemptPerfect=false;
  svg.innerHTML='';svg.classList.remove('reward-mode');drawRewardBackground(scene.theme);
  scene.shapes.forEach((s,i)=>svg.appendChild(createShape(s,i)));
  progressTitle.textContent=`Niveau ${state.level} · Exercice ${state.index+1} / ${state.order.length}`;sceneTitle.textContent=scene.title;
@@ -452,23 +538,32 @@ function validate(){
  if(state.solved)return;const scene=currentScene();const missing=state.answers.filter(a=>!a).length;
  svg.querySelectorAll('.scene-shape').forEach(el=>el.classList.remove('error','unclassified'));
  if(missing){state.answers.forEach((a,i)=>{if(!a)svg.querySelector(`.scene-shape[data-index="${i}"]`).classList.add('unclassified');});setStatus(`Il reste ${missing} zone${missing>1?'s':''} à classer.`,'error-text');return;}
- if(!state.firstCompleteValidated){let firstScore=0;scene.shapes.forEach((s,i)=>{if(state.answers[i]===s.expected)firstScore++;});state.score+=firstScore;state.firstCompleteValidated=true;}
+ if(!state.firstCompleteValidated){let firstScore=0;scene.shapes.forEach((s,i)=>{if(state.answers[i]===s.expected)firstScore++;});state.score+=firstScore;state.firstAttemptPerfect=firstScore===scene.shapes.length;state.firstCompleteValidated=true;}
  let errors=0;scene.shapes.forEach((s,i)=>{if(state.answers[i]!==s.expected){errors++;svg.querySelector(`.scene-shape[data-index="${i}"]`).classList.add('error');}});
  if(errors){setStatus(`Il reste ${errors} erreur${errors>1?'s':''}. Corrige les zones entourées puis revalide.`,'error-text');return;}
  succeed();
 }
 function succeed(){
  state.solved=true;const scene=currentScene();svg.classList.add('reward-mode');svg.querySelectorAll('.scene-shape').forEach((el,i)=>{el.classList.remove('error','unclassified');el.classList.add('locked');el.style.fill=scene.shapes[i].reward||'#cbd5e1';el.style.stroke='#2a3446';});
- setStatus('Bravo ! Tout est juste.','success-text');validateBtn.disabled=true;clearBtn.disabled=true;
+ const newPerfect=recordPerfectExercise();
+ let message=state.firstAttemptPerfect?'Bravo ! 100 % du premier coup.':'Bravo ! Tout est juste.';
+ if(newPerfect&&state.level<3&&levelUnlocked(state.level+1))message+=` Niveau ${state.level+1} débloqué !`;
+ setStatus(message,'success-text');validateBtn.disabled=true;clearBtn.disabled=true;
  const last=state.index===state.order.length-1;
- if(last){saveLevelResult();continueBtn.textContent=state.level<3?'OK, passer au niveau suivant':'OK, recommencer';}
- else continueBtn.textContent='OK, continuer';
+ if(last){
+   saveLevelResult();
+   if(state.level<3&&levelUnlocked(state.level+1))continueBtn.textContent='OK, passer au niveau suivant';
+   else if(state.level<3)continueBtn.textContent='OK, retour au menu';
+   else continueBtn.textContent='OK, recommencer';
+ } else continueBtn.textContent='OK, continuer';
  continueBtn.classList.remove('hidden');
 }
 function next(){
  const last=state.index===state.order.length-1;
  if(!last){state.index++;loadScene();return;}
- if(state.level<3){startLevel(state.level+1);}else{startLevel(3);}
+ if(state.level<3&&levelUnlocked(state.level+1)){startLevel(state.level+1);return;}
+ if(state.level===3){startLevel(3);return;}
+ game.classList.add('hidden');home.classList.remove('hidden');updateLevelButtons();
 }
 function saveLevelResult(){if(state.saved)return;enregistrerScoreMathas(state.score,state.total,LEVELS[state.level].name);state.saved=true;}
 function enregistrerScoreMathas(score, total, niveau) {
@@ -480,9 +575,10 @@ function enregistrerScoreMathas(score, total, niveau) {
 }
 
 document.querySelectorAll('.level-btn').forEach(b=>b.addEventListener('click',()=>startLevel(Number(b.dataset.level))));
-document.getElementById('menuBtn').addEventListener('click',()=>{game.classList.add('hidden');home.classList.remove('hidden');});
+document.getElementById('menuBtn').addEventListener('click',()=>{game.classList.add('hidden');home.classList.remove('hidden');updateLevelButtons();});
+masterBtn.addEventListener('click',requestMasterMode);
 validateBtn.addEventListener('click',validate);clearBtn.addEventListener('click',clearScene);continueBtn.addEventListener('click',next);
-buildPalette();
+buildPalette();updateMasterButton();updateLevelButtons();
 </script>
 </body>
 </html>
