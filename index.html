@@ -40,6 +40,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,
 .level-btn.locked:hover{transform:none;filter:saturate(.45) brightness(.82);box-shadow:none}
 .level-btn .lock-line{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.055em}
 .level-btn .lock-count{font-size:12px;margin-top:3px;color:rgba(255,255,255,.82)}
+.level-btn .level-progress{display:block;font-size:12px;margin-top:5px;color:rgba(255,255,255,.86);font-weight:800;letter-spacing:.01em}
+.level-btn.completed .level-progress{color:rgba(255,255,255,.96)}
 
 #game{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);padding:12px;gap:10px}
 .topbar{min-height:46px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
@@ -308,12 +310,15 @@ function updateLevelButtons(){
  document.querySelectorAll('.level-btn').forEach(btn=>{
    const level=Number(btn.dataset.level),span=btn.querySelector('span');
    const unlocked=levelUnlocked(level);
+   const done=Math.min(perfectCount(level),SCENES[level].length);
+   const total=SCENES[level].length;
    btn.disabled=!unlocked;
    btn.classList.toggle('locked',!unlocked);
+   btn.classList.toggle('completed',unlocked&&done===total);
    btn.setAttribute('aria-disabled',String(!unlocked));
    if(unlocked){
      span.className='';
-     span.textContent=btn.dataset.label;
+     span.innerHTML=`${btn.dataset.label}<span class="level-progress">${done}/${total} réussis</span>`;
    }else{
      const req=UNLOCK_REQUIREMENTS[level];
      const n=Math.min(perfectCount(req.sourceLevel),req.needed);
@@ -366,7 +371,12 @@ function selectCategory(cat){if(state.solved)return;state.selected=cat;document.
 function setStatus(text,type=''){statusEl.textContent=text;statusEl.className='status'+(type?` ${type}`:'');}
 function startLevel(level){
  if(!levelUnlocked(level)){updateLevelButtons();return;}
- state={level,order:shuffle(SCENES[level].map((_,i)=>i)),index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,firstAttemptPerfect:false,score:0,total:SCENES[level].reduce((n,s)=>n+s.shapes.length,0),saved:false};
+ const mastered=new Set(progress.perfect[level]||[]);
+ const unfinished=[],finished=[];
+ SCENES[level].forEach((scene,i)=>(mastered.has(scene.title)?finished:unfinished).push(i));
+ // Les exercices qui ne sont pas encore réussis à 100 % sont toujours proposés d'abord.
+ const order=[...shuffle(unfinished),...shuffle(finished)];
+ state={level,order,index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,firstAttemptPerfect:false,score:0,total:SCENES[level].reduce((n,s)=>n+s.shapes.length,0),saved:false};
  home.classList.add('hidden');game.classList.remove('hidden');buildPalette();loadScene();
 }
 function currentScene(){return SCENES[state.level][state.order[state.index]];}
