@@ -21,6 +21,34 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,
 .master-btn:hover,.master-btn:focus-visible{opacity:.86;background:rgba(255,255,255,.72);color:rgba(23,32,51,.68);border-color:rgba(35,48,68,.22)}
 .master-btn.active{opacity:.58;color:rgba(107,52,67,.72);border-color:rgba(107,52,67,.24);background:rgba(255,255,255,.42)}
 
+.reset-btn{position:fixed;left:44px;bottom:8px;z-index:50;height:28px;border:1px solid rgba(107,52,67,.22);border-radius:8px;background:rgba(255,255,255,.54);color:rgba(107,52,67,.72);font-size:11px;font-weight:850;padding:0 9px;cursor:pointer;opacity:.68;transition:.16s ease;backdrop-filter:blur(2px)}
+.reset-btn:hover,.reset-btn:focus-visible{opacity:1;background:rgba(255,255,255,.92);border-color:rgba(107,52,67,.36)}
+.master-modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:18px;background:rgba(22,30,44,.34);backdrop-filter:blur(4px)}
+.master-dialog{width:min(390px,94vw);background:#fff;border:1px solid #dfe5ee;border-radius:20px;box-shadow:0 24px 70px rgba(22,30,44,.28);padding:22px}
+.master-dialog h2{margin:0 0 7px;font-size:20px;letter-spacing:-.015em}.master-dialog p{margin:0 0 16px;color:#667085;font-size:13px;line-height:1.4}
+.master-field{display:grid;gap:7px;margin-bottom:10px}.master-field label{font-size:12px;color:#475467;font-weight:800}.master-field input{width:100%;height:44px;border:1px solid #cfd8e4;border-radius:11px;padding:0 12px;font:inherit;font-weight:750;letter-spacing:.12em;color:#172033;background:#fbfcfd}.master-field input:focus{outline:3px solid rgba(107,52,67,.14);border-color:#925160}
+.master-error{min-height:18px;color:#b13d3d;font-size:12px;font-weight:750;margin:2px 0 8px}
+.master-actions{display:flex;justify-content:flex-end;gap:8px}.master-actions button{border:0;border-radius:10px;padding:10px 13px;font-weight:850;cursor:pointer}.master-cancel{background:#eef2f6;color:#475467}.master-submit{background:#6B3443;color:#fff}.master-danger{background:#8b2f3e!important;color:#fff}
+
+.unlock-toast{position:fixed;left:50%;top:22px;z-index:80;display:flex;align-items:center;gap:12px;min-width:280px;max-width:min(88vw,430px);padding:13px 17px;border-radius:16px;background:rgba(255,255,255,.97);border:1px solid rgba(107,52,67,.20);box-shadow:0 18px 45px rgba(35,48,68,.20);color:#3d2730;opacity:0;pointer-events:none;transform:translate(-50%,-20px) scale(.94)}
+.unlock-toast.show{animation:unlockToast 3.1s cubic-bezier(.2,.8,.2,1) both}
+.unlock-mark{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:#7d4050;color:#fff;font-weight:950;font-size:20px;box-shadow:0 0 0 0 rgba(125,64,80,.30)}
+.unlock-toast.show .unlock-mark{animation:unlockPulse 1s ease .18s 2}
+.unlock-toast strong{display:block;font-size:16px}.unlock-toast span{display:block;margin-top:2px;font-size:12px;color:#7b5b66;font-weight:700}
+@keyframes unlockToast{0%{opacity:0;transform:translate(-50%,-20px) scale(.94)}12%,78%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-10px) scale(.98)}}
+@keyframes unlockPulse{0%{box-shadow:0 0 0 0 rgba(125,64,80,.30)}70%{box-shadow:0 0 0 12px rgba(125,64,80,0)}100%{box-shadow:0 0 0 0 rgba(125,64,80,0)}}
+
+.bravo-toast{position:fixed;left:50%;bottom:28px;z-index:82;display:flex;align-items:center;gap:12px;min-width:280px;max-width:min(88vw,420px);padding:14px 18px;border-radius:18px;background:rgba(255,255,255,.98);border:1px solid rgba(24,132,90,.16);box-shadow:0 18px 45px rgba(35,48,68,.22);color:#17543d;opacity:0;pointer-events:none;transform:translate(-50%,18px) scale(.92)}
+.bravo-toast.show{animation:bravoToast 2.7s cubic-bezier(.2,.8,.2,1) both}
+.bravo-mark{position:relative;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:radial-gradient(circle at 35% 35%,#ffe694 0%,#f5c94f 45%,#e0ab28 100%);color:#7c4d07;font-size:21px;font-weight:900;box-shadow:0 0 0 0 rgba(240,194,87,.28)}
+.bravo-toast.show .bravo-mark{animation:bravoPop .95s ease .08s 2}
+.bravo-mark::before,.bravo-mark::after{content:'';position:absolute;inset:-7px;border-radius:50%;border:2px dashed rgba(240,194,87,.55);opacity:.7}
+.bravo-mark::after{inset:-14px;opacity:.38}
+.bravo-toast strong{display:block;font-size:16px}.bravo-toast span{display:block;margin-top:2px;font-size:12px;color:#4e7a68;font-weight:700}
+@keyframes bravoToast{0%{opacity:0;transform:translate(-50%,22px) scale(.92)}12%,76%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,10px) scale(.98)}}
+@keyframes bravoPop{0%{transform:scale(.82) rotate(-8deg);box-shadow:0 0 0 0 rgba(240,194,87,.30)}50%{transform:scale(1.08) rotate(6deg);box-shadow:0 0 0 12px rgba(240,194,87,0)}100%{transform:scale(1) rotate(0deg);box-shadow:0 0 0 0 rgba(240,194,87,0)}}
+@media (prefers-reduced-motion:reduce){.unlock-toast.show,.unlock-toast.show .unlock-mark,.bravo-toast.show,.bravo-toast.show .bravo-mark{animation:none}.unlock-toast.show{opacity:1;transform:translate(-50%,0)}.bravo-toast.show{opacity:1;transform:translate(-50%,0)}}
+
 #home{height:100dvh;display:grid;place-items:center;padding:24px;overflow:auto;background:
   radial-gradient(circle at 15% 15%,rgba(47,111,237,.10),transparent 30%),
   radial-gradient(circle at 85% 85%,rgba(132,87,217,.08),transparent 34%),#f7f9fc}
@@ -102,6 +130,25 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(47,111,237,
 </section>
 
 <button id="masterBtn" class="master-btn" type="button" aria-label="Mode enseignant" title="Mode enseignant">M</button>
+<button id="resetBtn" class="reset-btn hidden" type="button" title="Effacer les scores et la progression">Retour à 0</button>
+<div id="masterModal" class="master-modal hidden" role="dialog" aria-modal="true" aria-labelledby="masterModalTitle">
+  <form id="masterForm" class="master-dialog" autocomplete="off">
+    <h2 id="masterModalTitle">Mode enseignant</h2>
+    <p>Saisis le mot de passe pour déverrouiller tous les niveaux pendant cette session.</p>
+    <div class="master-field"><label for="masterPassword">Mot de passe</label><input id="masterPassword" name="masterPassword" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" /></div>
+    <div id="masterError" class="master-error" aria-live="polite"></div>
+    <div class="master-actions"><button id="masterCancel" class="master-cancel" type="button">Annuler</button><button class="master-submit" type="submit">Valider</button></div>
+  </form>
+</div>
+<div id="resetModal" class="master-modal hidden" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle">
+  <div class="master-dialog">
+    <h2 id="resetModalTitle">Retour à 0</h2>
+    <p>Cette action efface les scores enregistrés et remet tous les déblocages à zéro. Les niveaux 2 et 3 devront être débloqués à nouveau.</p>
+    <div class="master-actions"><button id="resetCancel" class="master-cancel" type="button">Annuler</button><button id="resetConfirm" class="master-danger" type="button">Tout remettre à zéro</button></div>
+  </div>
+</div>
+<div id="unlockToast" class="unlock-toast" role="status" aria-live="polite"><div class="unlock-mark">✓</div><div><strong id="unlockTitle">Niveau débloqué</strong><span>Un nouveau niveau est maintenant accessible.</span></div></div>
+<div id="bravoToast" class="bravo-toast" role="status" aria-live="polite"><div class="bravo-mark">★</div><div><strong>Bravo !</strong><span>Exercice réussi du premier coup.</span></div></div>
 
 <section id="game" class="hidden">
   <header class="topbar">
@@ -209,6 +256,37 @@ const SCENES={
   S(215,245,55,0,REWARD.cream),S(300,245,55,0,REWARD.cream),S(385,245,55,0,REWARD.cream),
   R(210,318,250,30,0,REWARD.green),T('755,330 815,265 872,330',REWARD.orange),R(792,330,44,92,0,REWARD.brown),
   E(825,160,56,24,0,REWARD.cream),P('88,185 130,165 165,195 145,235 100,228',REWARD.slate),P('330,270 370,260 382,290 340,302',REWARD.purple)
+ ]},
+ {title:'Maison moderne',theme:'village',shapes:[
+  R(220,220,360,210,0,REWARD.cream),T('190,220 400,85 610,220',REWARD.red),S(265,260,60,0,REWARD.sky),R(360,260,72,60,0,REWARD.sky),S(485,260,56,0,REWARD.sky),
+  R(455,325,55,105,0,REWARD.brown),R(260,325,140,95,0,REWARD.slate),R(270,350,120,22,0,REWARD.green),D(790,105,44,REWARD.gold),
+  R(690,330,35,100,0,REWARD.brown),D(707,282,48,REWARD.green),R(805,355,18,75,0,REWARD.brown),S(789,315,50,0,REWARD.blue),T('780,315 814,285 848,315',REWARD.orange),
+  E(115,118,64,23,0,REWARD.sky),P('610,405 646,378 690,392 704,430 628,435',REWARD.purple),R(620,450,130,30,0,REWARD.slate),P('95,410 135,385 175,405 162,442 110,440',REWARD.green)
+ ]},
+ {title:'Sous-marin',theme:'sea',shapes:[
+  R(260,245,370,140,0,REWARD.blue),T('630,245 720,315 630,385',REWARD.orange),T('260,265 205,235 205,300',REWARD.red),T('260,365 205,400 205,330',REWARD.red),
+  R(420,195,80,50,0,REWARD.slate),R(450,125,18,70,0,REWARD.slate),R(450,125,65,18,0,REWARD.slate),
+  D(320,315,20,REWARD.sky),D(400,315,20,REWARD.sky),D(480,315,20,REWARD.sky),D(560,315,20,REWARD.sky),R(335,385,220,18,0,REWARD.slate),
+  D(180,315,18,REWARD.purple),R(142,291,26,18,0,REWARD.orange),R(142,322,26,18,0,REWARD.orange),
+  E(790,180,30,18,0,REWARD.cream),E(840,130,21,13,0,REWARD.cream),P('90,440 132,407 182,424 170,468 108,474',REWARD.slate),S(770,410,55,0,REWARD.gold),R(762,392,70,18,0,REWARD.brown)
+ ]},
+ {title:'Hélicoptère',theme:'road',shapes:[
+  R(300,240,280,130,0,REWARD.slate),T('580,240 660,305 580,370',REWARD.orange),R(140,285,160,45,0,REWARD.slate),T('120,240 160,285 120,330',REWARD.red),
+  R(240,110,470,22,0,REWARD.brown),R(438,132,22,108,0,REWARD.slate),S(485,265,70,0,REWARD.sky),R(390,275,72,60,0,REWARD.blue),
+  R(335,390,210,18,0,REWARD.slate),R(370,350,20,40,0,REWARD.slate),R(510,350,20,40,0,REWARD.slate),D(820,100,42,REWARD.gold),
+  E(120,100,62,22,0,REWARD.cream),P('680,390 735,350 790,390 760,435 705,430',REWARD.green),S(755,420,50,0,REWARD.brown),R(747,438,66,12,0,REWARD.gold),
+  T('110,455 138,408 166,455',REWARD.orange),R(865,345,18,90,0,REWARD.brown),R(835,315,78,30,0,REWARD.red),E(260,180,45,17,0,REWARD.cream)
+ ]},
+ {title:'Phare',theme:'sea',shapes:[
+  R(425,210,110,250,0,REWARD.cream),R(410,155,140,55,0,REWARD.sky),T('395,155 480,92 565,155',REWARD.red),R(385,202,190,18,0,REWARD.slate),
+  S(458,250,45,0,REWARD.sky),R(453,325,54,45,0,REWARD.sky),R(455,370,50,90,0,REWARD.brown),T('360,174 250,126 360,205',REWARD.gold),T('600,174 710,126 600,205',REWARD.gold),
+  D(820,92,44,REWARD.gold),E(145,105,66,23,0,REWARD.cream),P('245,448 292,410 340,434 325,475 265,480',REWARD.slate),P('575,450 620,418 670,438 660,480 598,482',REWARD.slate),
+  R(690,435,200,22,0,REWARD.brown),S(735,350,55,0,REWARD.blue),T('725,350 763,315 800,350',REWARD.orange),D(835,390,22,REWARD.red),R(827,412,16,45,0,REWARD.slate),E(150,435,54,18,0,REWARD.teal)
+ ]},
+ {title:'Atelier de machines',theme:'robot',shapes:[
+  R(95,220,265,180,0,REWARD.slate),S(135,250,70,0,REWARD.sky),R(245,250,72,60,0,REWARD.cream),D(145,345,15,REWARD.green),D(195,345,15,REWARD.gold),D(245,345,15,REWARD.red),R(120,400,220,28,0,REWARD.brown),R(150,325,80,22,0,REWARD.teal),
+  R(585,200,250,200,0,REWARD.blue),R(620,238,84,70,0,REWARD.sky),S(735,238,60,0,REWARD.cream),D(630,345,15,REWARD.green),D(680,345,15,REWARD.gold),D(730,345,15,REWARD.red),R(605,400,210,28,0,REWARD.brown),T('758,380 790,325 822,380',REWARD.orange),
+  R(365,360,200,30,0,REWARD.green),D(400,410,22,REWARD.purple),D(465,410,22,REWARD.purple),D(530,410,22,REWARD.purple),E(470,160,70,24,0,REWARD.teal),P('420,265 455,248 490,268 478,305 435,302',REWARD.pink)
  ]}
 ],
 3:[
@@ -220,7 +298,7 @@ const SCENES={
   R(835,270,22,145,0,REWARD.slate),D(846,240,25,REWARD.red),D(846,180,25,REWARD.gold),D(846,120,25,REWARD.green),
   R(85,478,720,12,0,REWARD.slate),R(100,510,690,12,0,REWARD.brown),
   T('20,180 50,130 80,180',REWARD.green),T('95,180 125,125 155,180',REWARD.green),
-  E(470,120,76,25,0,REWARD.cream),E(600,95,54,20,0,REWARD.cream),P('365,175 400,155 430,182 412,215 372,210',REWARD.slate),E(302,374,24,15,0,REWARD.teal)
+  E(470,120,76,25,0,REWARD.cream),E(600,95,54,20,0,REWARD.cream),P('365,175 400,155 430,182 412,215 372,210',REWARD.slate),E(302,374,24,15,0,REWARD.teal),D(215,215,18,REWARD.gold),R(115,430,135,18,0,REWARD.brown),R(130,448,16,30,0,REWARD.slate),R(220,448,16,30,0,REWARD.slate),S(365,245,42,0,REWARD.red),R(378,287,16,65,0,REWARD.slate),P('305,420 340,405 365,425 350,456 315,452',REWARD.purple)
  ]},
  {title:'Chantier',theme:'construction',shapes:[
   R(110,235,250,190,0,REWARD.cream),S(145,270,56,0,REWARD.sky),S(265,270,56,0,REWARD.sky),R(210,330,52,95,0,REWARD.brown),T('95,235 235,135 375,235',REWARD.red),
@@ -231,7 +309,7 @@ const SCENES={
   R(70,455,300,22,0,REWARD.slate),T('780,430 825,355 870,430',REWARD.orange),R(808,430,34,72,0,REWARD.brown),
   P('760,245 802,220 842,244 830,285 775,285',REWARD.slate),E(825,155,58,22,0,REWARD.cream),
   T('400,448 425,405 450,448',REWARD.orange),T('730,448 755,405 780,448',REWARD.orange),
-  R(380,525,420,10,0,REWARD.brown),P('535,372 575,365 588,392 548,400',REWARD.purple)
+  R(380,525,420,10,0,REWARD.brown),P('535,372 575,365 588,392 548,400',REWARD.purple),S(558,128,48,0,REWARD.sky),D(650,105,18,REWARD.gold),R(280,350,68,56,0,REWARD.sky),D(710,385,16,REWARD.red),E(300,505,52,18,0,REWARD.slate),P('735,180 770,160 800,182 788,215 748,212',REWARD.purple),R(85,495,180,18,0,REWARD.brown)
  ]},
  {title:'Village',theme:'village',shapes:[
   R(70,250,250,155,0,REWARD.cream),T('55,250 195,140 335,250',REWARD.red),S(105,285,54,0,REWARD.sky),S(230,285,54,0,REWARD.sky),R(175,325,48,80,0,REWARD.brown),
@@ -242,7 +320,7 @@ const SCENES={
   D(840,105,46,REWARD.gold),E(120,105,72,24,0,REWARD.cream),E(290,92,55,20,0,REWARD.cream),
   P('700,430 745,405 790,432 770,475 720,470',REWARD.slate),T('60,455 95,405 130,455',REWARD.orange),
   R(88,455,18,48,0,REWARD.brown),R(660,335,58,48,0,REWARD.gold),R(675,383,18,47,0,REWARD.brown),
-  T('815,455 850,405 885,455',REWARD.orange),E(610,365,24,15,0,REWARD.teal)
+  T('815,455 850,405 885,455',REWARD.orange),E(610,365,24,15,0,REWARD.teal),R(250,345,60,50,0,REWARD.sky),D(212,365,9,REWARD.gold),R(590,335,54,45,0,REWARD.sky),S(736,330,30,0,REWARD.blue),T('731,330 751,310 771,330',REWARD.red),S(430,335,42,0,REWARD.gold)
  ]},
  {title:'Base spatiale',theme:'spacebase',shapes:[
   R(110,270,250,150,0,REWARD.slate),T('110,270 235,165 360,270',REWARD.cream),S(150,300,52,0,REWARD.sky),S(265,300,52,0,REWARD.sky),R(205,340,58,80,0,REWARD.brown),
@@ -252,7 +330,7 @@ const SCENES={
   R(80,515,800,14,0,REWARD.slate),D(835,110,42,REWARD.gold),E(180,105,70,22,0,REWARD.cream),
   P('670,120 710,92 748,120 730,162 688,160',REWARD.purple),R(650,200,60,50,0,REWARD.green),R(665,250,20,60,0,REWARD.brown),
   T('300,455 335,400 370,455',REWARD.orange),T('600,455 635,400 670,455',REWARD.orange),
-  P('85,175 125,145 165,175 145,220 100,215',REWARD.slate),R(360,110,65,42,0,REWARD.green),P('130,330 170,320 182,350 142,360',REWARD.pink)
+  P('85,175 125,145 165,175 145,220 100,215',REWARD.slate),R(360,110,65,42,0,REWARD.green),P('130,330 170,320 182,350 142,360',REWARD.pink),D(145,385,12,REWARD.green),D(180,385,12,REWARD.gold),D(300,385,12,REWARD.red),R(710,340,95,18,0,REWARD.teal),S(370,250,42,0,REWARD.blue),R(382,292,18,70,0,REWARD.slate),P('715,475 750,458 785,478 770,502 728,500',REWARD.purple)
  ]},
  {title:'Parc urbain',theme:'park',shapes:[
   R(70,235,250,175,0,REWARD.cream),R(95,190,200,45,0,REWARD.slate),S(105,275,52,0,REWARD.sky),S(220,275,52,0,REWARD.sky),R(170,330,48,80,0,REWARD.brown),
@@ -264,7 +342,42 @@ const SCENES={
   P('820,330 860,305 900,332 885,375 838,375',REWARD.slate),T('80,455 115,405 150,455',REWARD.orange),
   R(105,455,20,46,0,REWARD.brown),R(665,405,58,48,0,REWARD.purple),R(680,453,18,48,0,REWARD.brown),
   T('250,455 285,405 320,455',REWARD.orange),S(330,420,45,0,REWARD.gold),
-  R(345,465,18,38,0,REWARD.brown),P('585,150 625,125 665,150 650,190 600,190',REWARD.slate)
+  R(345,465,18,38,0,REWARD.brown),P('585,150 625,125 665,150 650,190 600,190',REWARD.slate),R(235,340,60,50,0,REWARD.sky),D(205,370,9,REWARD.gold),R(430,322,160,18,0,REWARD.teal),S(615,350,40,0,REWARD.gold),R(627,390,16,60,0,REWARD.slate),P('720,120 752,92 785,118 770,154 735,152',REWARD.pink)
+ ]},
+ {title:'Ferme',theme:'village',shapes:[
+  R(65,220,305,210,0,REWARD.red),T('48,220 218,92 388,220',REWARD.cream),R(170,300,92,130,0,REWARD.brown),S(95,275,58,0,REWARD.sky),S(282,275,58,0,REWARD.sky),R(285,350,60,50,0,REWARD.sky),D(218,205,24,REWARD.gold),
+  R(410,180,120,250,0,REWARD.slate),T('395,180 470,112 545,180',REWARD.red),S(442,230,54,0,REWARD.sky),R(440,310,62,52,0,REWARD.sky),D(470,390,16,REWARD.gold),
+  R(570,330,180,80,0,REWARD.green),R(670,250,110,80,0,REWARD.slate),S(695,265,50,0,REWARD.sky),R(610,345,60,50,0,REWARD.sky),T('750,330 812,370 750,410',REWARD.orange),R(585,270,20,60,0,REWARD.slate),
+  D(610,455,46,REWARD.slate),D(755,455,54,REWARD.slate),D(610,455,21,REWARD.cream),D(755,455,25,REWARD.cream),
+  R(825,330,36,100,0,REWARD.brown),D(843,282,48,REWARD.green),D(875,92,40,REWARD.gold),E(120,105,62,22,0,REWARD.cream),P('520,455 555,438 588,456 575,485 535,486',REWARD.slate),
+  R(72,462,290,16,0,REWARD.brown),R(72,495,290,16,0,REWARD.brown),R(90,440,18,75,0,REWARD.brown),R(170,440,18,75,0,REWARD.brown),R(250,440,18,75,0,REWARD.brown),R(330,440,18,75,0,REWARD.brown),
+  R(875,350,18,80,0,REWARD.brown),S(858,310,52,0,REWARD.blue),T('850,310 884,280 918,310',REWARD.orange)
+ ]},
+ {title:'Port',theme:'sea',shapes:[
+  R(65,230,255,170,0,REWARD.slate),T('50,230 192,130 335,230',REWARD.red),R(155,305,75,95,0,REWARD.brown),S(92,270,52,0,REWARD.sky),R(245,270,62,52,0,REWARD.sky),S(245,335,50,0,REWARD.cream),
+  P('325,360 650,360 610,445 365,445',REWARD.blue),R(365,300,235,60,0,REWARD.cream),R(440,245,120,55,0,REWARD.slate),S(455,255,38,0,REWARD.sky),R(505,255,46,38,0,REWARD.sky),S(570,312,42,0,REWARD.gold),R(480,150,18,95,0,REWARD.brown),T('498,160 555,185 498,205',REWARD.red),
+  S(365,315,42,0,REWARD.red),R(415,315,52,42,0,REWARD.green),S(475,315,42,0,REWARD.blue),D(395,405,17,REWARD.purple),D(485,405,17,REWARD.purple),D(575,405,17,REWARD.purple),
+  R(720,150,24,255,0,REWARD.gold),R(590,125,270,24,0,REWARD.gold),T('720,150 675,195 720,195',REWARD.orange),T('744,150 790,195 744,195',REWARD.orange),R(820,150,16,135,0,REWARD.slate),P('800,285 855,285 842,330 812,330',REWARD.orange),
+  D(875,390,22,REWARD.red),R(867,412,16,50,0,REWARD.slate),T('852,462 882,462 867,500',REWARD.orange),D(850,82,40,REWARD.gold),E(120,100,62,22,0,REWARD.cream),E(290,92,52,18,0,REWARD.cream),
+  P('90,445 128,420 165,438 150,475 105,476',REWARD.slate),P('675,450 715,425 755,445 740,480 695,480',REWARD.slate),R(320,482,385,18,0,REWARD.brown)
+ ]},
+ {title:'Rue urbaine',theme:'road',shapes:[
+  R(55,130,320,270,0,REWARD.cream),R(75,100,245,30,0,REWARD.slate),S(90,175,52,0,REWARD.sky),S(170,175,52,0,REWARD.sky),R(250,175,62,52,0,REWARD.sky),R(92,260,62,52,0,REWARD.sky),R(180,260,62,52,0,REWARD.sky),R(255,305,55,95,0,REWARD.brown),T('70,330 145,300 220,330',REWARD.red),
+  R(620,100,250,300,0,REWARD.slate),S(650,150,50,0,REWARD.sky),R(725,150,60,50,0,REWARD.sky),S(815,150,50,0,REWARD.sky),R(650,245,60,50,0,REWARD.sky),R(745,245,60,50,0,REWARD.sky),R(820,305,50,95,0,REWARD.brown),S(735,325,50,0,REWARD.gold),
+  R(290,350,300,78,0,REWARD.blue),R(590,360,90,68,0,REWARD.red),S(330,365,46,0,REWARD.sky),R(390,365,56,46,0,REWARD.sky),S(460,365,46,0,REWARD.sky),R(520,365,56,46,0,REWARD.sky),D(355,465,38,REWARD.slate),D(575,465,38,REWARD.slate),D(355,465,17,REWARD.cream),D(575,465,17,REWARD.cream),R(315,332,130,18,0,REWARD.cream),R(675,400,48,16,0,REWARD.slate),
+  R(520,155,18,145,0,REWARD.slate),R(495,125,84,70,0,REWARD.slate),D(529,143,13,REWARD.red),D(529,160,13,REWARD.gold),D(529,178,13,REWARD.green),D(850,72,38,REWARD.gold),E(420,92,58,20,0,REWARD.cream),P('700,445 742,420 785,445 770,480 718,480',REWARD.green),T('90,480 120,430 150,480',REWARD.orange),R(112,480,16,40,0,REWARD.brown)
+ ]},
+ {title:'Aéroport',theme:'road',shapes:[
+  R(55,170,305,230,0,REWARD.cream),R(75,140,265,30,0,REWARD.slate),S(85,215,52,0,REWARD.sky),R(155,215,62,52,0,REWARD.sky),S(235,215,52,0,REWARD.sky),R(90,300,62,52,0,REWARD.sky),R(175,300,62,52,0,REWARD.sky),S(260,300,52,0,REWARD.sky),R(125,335,52,65,0,REWARD.brown),R(250,335,52,65,0,REWARD.brown),R(125,185,160,22,0,REWARD.red),
+  R(760,210,70,190,0,REWARD.slate),R(720,150,150,60,0,REWARD.blue),S(735,160,38,0,REWARD.sky),R(785,160,46,38,0,REWARD.sky),S(840,160,38,0,REWARD.sky),T('710,150 795,100 880,150',REWARD.red),
+  R(340,336,300,48,0,REWARD.cream),T('640,336 705,360 640,384',REWARD.orange),T('340,336 294,302 340,360',REWARD.red),R(430,286,120,18,0,REWARD.blue),R(455,304,12,32,0,REWARD.slate),R(515,304,12,32,0,REWARD.slate),D(385,360,10,REWARD.sky),D(430,360,10,REWARD.sky),D(475,360,10,REWARD.sky),D(520,360,10,REWARD.sky),R(440,398,14,28,0,REWARD.slate),R(548,398,14,28,0,REWARD.slate),D(447,434,18,REWARD.slate),D(555,434,18,REWARD.slate),S(700,420,48,0,REWARD.gold),T('770,465 800,415 830,465',REWARD.orange),D(870,78,38,REWARD.gold),E(420,92,58,20,0,REWARD.cream),P('615,455 650,438 685,455 670,486 628,485',REWARD.purple),R(80,470,180,14,0,REWARD.slate)
+ ]},
+ {title:'Observatoire',theme:'spacebase',shapes:[
+  R(80,250,280,180,0,REWARD.slate),E(220,200,140,50,0,REWARD.cream),R(198,165,44,70,0,REWARD.sky),R(185,335,58,95,0,REWARD.brown),S(105,290,52,0,REWARD.sky),R(275,290,62,52,0,REWARD.sky),S(275,360,48,0,REWARD.gold),
+  R(430,190,220,45,-20,REWARD.cream),R(392,205,48,30,-20,REWARD.slate),D(650,150,22,REWARD.sky),R(525,255,30,120,0,REWARD.slate),T('490,375 590,375 540,430',REWARD.orange),D(540,245,20,REWARD.purple),
+  R(620,350,190,65,0,REWARD.blue),S(680,290,70,0,REWARD.slate),R(690,305,58,48,0,REWARD.sky),D(655,455,38,REWARD.slate),D(780,455,38,REWARD.slate),D(655,455,17,REWARD.cream),D(780,455,17,REWARD.cream),R(735,230,16,60,0,REWARD.slate),D(743,216,15,REWARD.red),
+  R(350,365,18,80,0,REWARD.slate),S(292,305,52,0,REWARD.blue),R(375,305,62,52,0,REWARD.blue),D(865,92,38,REWARD.gold),D(795,135,24,REWARD.purple),P('95,455 132,432 172,450 158,485 110,487',REWARD.slate),P('450,455 488,438 525,456 510,490 465,490',REWARD.slate),
+  E(820,205,55,30,0,REWARD.teal),R(812,235,16,75,0,REWARD.slate),S(845,330,48,0,REWARD.gold),R(838,385,62,18,0,REWARD.red),D(852,420,11,REWARD.green),D(875,420,11,REWARD.gold),D(898,420,11,REWARD.red)
  ]}
 ]};
 
@@ -278,11 +391,17 @@ const home=document.getElementById('home'),game=document.getElementById('game'),
 const catList=document.getElementById('catList'),statusEl=document.getElementById('status'),validateBtn=document.getElementById('validateBtn'),clearBtn=document.getElementById('clearBtn'),continueBtn=document.getElementById('continueBtn');
 const progressTitle=document.getElementById('progressTitle'),sceneTitle=document.getElementById('sceneTitle'),classifiedCount=document.getElementById('classifiedCount');
 const masterBtn=document.getElementById('masterBtn');
+const resetBtn=document.getElementById('resetBtn');
+const masterModal=document.getElementById('masterModal'),masterForm=document.getElementById('masterForm'),masterPassword=document.getElementById('masterPassword'),masterError=document.getElementById('masterError'),masterCancel=document.getElementById('masterCancel');
+const resetModal=document.getElementById('resetModal'),resetCancel=document.getElementById('resetCancel'),resetConfirm=document.getElementById('resetConfirm');
+const unlockToast=document.getElementById('unlockToast'),unlockTitle=document.getElementById('unlockTitle');
+const bravoToast=document.getElementById('bravoToast');
 const PROGRESS_KEY = "mathas_formes_progress_" + window.location.pathname.toLowerCase();
+const SCORES_KEY = "mathas_scores_" + window.location.pathname.toLowerCase();
 const MASTER_SESSION_KEY = "mathas_formes_master_session";
 let masterMode=false;
 try{masterMode=sessionStorage.getItem(MASTER_SESSION_KEY)==='1';}catch{}
-const UNLOCK_REQUIREMENTS={2:{sourceLevel:1,needed:2},3:{sourceLevel:2,needed:3}};
+const UNLOCK_REQUIREMENTS={2:{sourceLevel:1,needed:2},3:{sourceLevel:2,needed:5}};
 let progress=loadProgress();
 let state={level:1,order:[],index:0,selected:'square',answers:[],solved:false,firstCompleteValidated:false,firstAttemptPerfect:false,score:0,total:0,saved:false};
 
@@ -323,7 +442,7 @@ function updateLevelButtons(){
      const req=UNLOCK_REQUIREMENTS[level];
      const n=Math.min(perfectCount(req.sourceLevel),req.needed);
      span.className='lock-line';
-     span.innerHTML=`Bloqué <span class="lock-count">${n}/${req.needed}</span>`;
+     span.innerHTML=`Bloqué <span class="lock-count">Niv${req.sourceLevel} ${n}/${req.needed}</span>`;
    }
  });
 }
@@ -336,25 +455,76 @@ function recordPerfectExercise(){
  list.push(key);saveProgress();updateLevelButtons();return true;
 }
 
+function showUnlockToast(level){
+ if(!unlockToast||masterMode)return;
+ unlockTitle.textContent=`Niveau ${level} débloqué !`;
+ unlockToast.classList.remove('show');
+ void unlockToast.offsetWidth;
+ unlockToast.classList.add('show');
+}
+function showBravoToast(){
+ if(!bravoToast)return;
+ bravoToast.classList.remove('show');
+ void bravoToast.offsetWidth;
+ bravoToast.classList.add('show');
+}
+
 function updateMasterButton(){
  if(!masterBtn)return;
  masterBtn.classList.toggle('active',masterMode);
  masterBtn.setAttribute('aria-pressed',String(masterMode));
  masterBtn.title=masterMode?'Mode enseignant actif':'Mode enseignant';
+ if(resetBtn)resetBtn.classList.toggle('hidden',!masterMode);
 }
-function requestMasterMode(){
+function openMasterModal(){
  if(masterMode)return;
- const entered=window.prompt('Mot de passe enseignant :');
- if(entered===null)return;
- if(entered==='Thecakeisalie'){
+ masterError.textContent='';
+ masterPassword.value='';
+ masterModal.classList.remove('hidden');
+ requestAnimationFrame(()=>masterPassword.focus());
+}
+function closeMasterModal(){
+ masterModal.classList.add('hidden');
+ masterPassword.value='';
+ masterError.textContent='';
+ masterBtn.focus();
+}
+function requestMasterMode(){openMasterModal();}
+function validateMasterPassword(e){
+ e.preventDefault();
+ if(masterPassword.value==='Thecakeisalie'){
    masterMode=true;
    try{sessionStorage.setItem(MASTER_SESSION_KEY,'1');}catch{}
+   closeMasterModal();
    updateMasterButton();
    updateLevelButtons();
-   window.alert('Mode enseignant activé pour cette session. Tous les niveaux sont accessibles.');
- }else{
-   window.alert('Mot de passe incorrect.');
+   return;
  }
+ masterError.textContent='Mot de passe incorrect.';
+ masterPassword.value='';
+ masterPassword.focus();
+}
+function openResetModal(){
+ if(!masterMode)return;
+ resetModal.classList.remove('hidden');
+ requestAnimationFrame(()=>resetConfirm.focus());
+}
+function closeResetModal(){
+ resetModal.classList.add('hidden');
+ if(masterMode)resetBtn.focus();
+}
+function resetAllProgress(){
+ try{localStorage.removeItem(PROGRESS_KEY);}catch{}
+ try{localStorage.removeItem(SCORES_KEY);}catch{}
+ try{sessionStorage.removeItem(MASTER_SESSION_KEY);}catch{}
+ progress={perfect:{1:[],2:[],3:[]}};
+ masterMode=false;
+ state.saved=false;
+ closeResetModal();
+ updateMasterButton();
+ game.classList.add('hidden');
+ home.classList.remove('hidden');
+ updateLevelButtons();
 }
 
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -555,9 +725,13 @@ function validate(){
 }
 function succeed(){
  state.solved=true;const scene=currentScene();svg.classList.add('reward-mode');svg.querySelectorAll('.scene-shape').forEach((el,i)=>{el.classList.remove('error','unclassified');el.classList.add('locked');el.style.fill=scene.shapes[i].reward||'#cbd5e1';el.style.stroke='#2a3446';});
+ const nextLevel=state.level<3?state.level+1:null;
+ const wasNextUnlocked=nextLevel?levelUnlocked(nextLevel):true;
  const newPerfect=recordPerfectExercise();
+ const unlockedNow=Boolean(newPerfect&&nextLevel&&!wasNextUnlocked&&levelUnlocked(nextLevel));
  let message=state.firstAttemptPerfect?'Bravo ! 100 % du premier coup.':'Bravo ! Tout est juste.';
- if(newPerfect&&state.level<3&&levelUnlocked(state.level+1))message+=` Niveau ${state.level+1} débloqué !`;
+ if(state.firstAttemptPerfect)showBravoToast();
+ if(unlockedNow){message+=` Niveau ${nextLevel} débloqué !`;showUnlockToast(nextLevel);}
  setStatus(message,'success-text');validateBtn.disabled=true;clearBtn.disabled=true;
  const last=state.index===state.order.length-1;
  if(last){
@@ -577,7 +751,7 @@ function next(){
 }
 function saveLevelResult(){if(state.saved)return;enregistrerScoreMathas(state.score,state.total,LEVELS[state.level].name);state.saved=true;}
 function enregistrerScoreMathas(score, total, niveau) {
-  const key = "mathas_scores_" + window.location.pathname.toLowerCase();
+  const key = SCORES_KEY;
   let scores = [];
   try { scores = JSON.parse(localStorage.getItem(key)) || []; } catch { scores = []; }
   scores.unshift({ score, total, niveau, date: new Date().toISOString() });
@@ -587,6 +761,14 @@ function enregistrerScoreMathas(score, total, niveau) {
 document.querySelectorAll('.level-btn').forEach(b=>b.addEventListener('click',()=>startLevel(Number(b.dataset.level))));
 document.getElementById('menuBtn').addEventListener('click',()=>{game.classList.add('hidden');home.classList.remove('hidden');updateLevelButtons();});
 masterBtn.addEventListener('click',requestMasterMode);
+masterForm.addEventListener('submit',validateMasterPassword);
+masterCancel.addEventListener('click',closeMasterModal);
+masterModal.addEventListener('click',e=>{if(e.target===masterModal)closeMasterModal();});
+resetBtn.addEventListener('click',openResetModal);
+resetCancel.addEventListener('click',closeResetModal);
+resetConfirm.addEventListener('click',resetAllProgress);
+resetModal.addEventListener('click',e=>{if(e.target===resetModal)closeResetModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!masterModal.classList.contains('hidden'))closeMasterModal();else if(!resetModal.classList.contains('hidden'))closeResetModal();}});
 validateBtn.addEventListener('click',validate);clearBtn.addEventListener('click',clearScene);continueBtn.addEventListener('click',next);
 buildPalette();updateMasterButton();updateLevelButtons();
 </script>
